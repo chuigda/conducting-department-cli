@@ -259,9 +259,20 @@ export function buildStatusBarUpdaterUserPrompt(
     simulatorOutputBefore: string,
     previousStatusBar: string,
     userInstruction: string,
-    simulatorOutputAfter: string
+    simulatorOutputAfter: string,
+    toolInteractions?: ToolInteraction[]
 ): string {
     const t = templates!
+
+    // Prepend tool call XML to the latest simulator output
+    let simAfter = ''
+    if (toolInteractions?.length) {
+        for (const ti of toolInteractions) {
+            simAfter += formatToolInteractionXml(ti)
+        }
+    }
+    simAfter += simulatorOutputAfter
+
     return t.statusBarUser
         .replaceAll('    ', '')
         .replaceAll('{$COARSE_MEMORY}\n', sanitize(coarseMemory))
@@ -269,7 +280,7 @@ export function buildStatusBarUpdaterUserPrompt(
         .replaceAll('{$SIMULATOR_OUTPUT_BEFORE_USER_INSTRUCTION}\n', sanitize(simulatorOutputBefore))
         .replaceAll('{$PREVIOUS_STATUS_BAR}\n', sanitize(previousStatusBar))
         .replaceAll('{$USER_INSTRUCTION}\n', sanitize(userInstruction))
-        .replaceAll('{$SIMULATOR_OUTPUT_AFTER_USER_INSTRUCTION}\n', sanitize(simulatorOutputAfter))
+        .replaceAll('{$SIMULATOR_OUTPUT_AFTER_USER_INSTRUCTION}\n', sanitize(simAfter))
 }
 
 // ── Memory Summarizer ──

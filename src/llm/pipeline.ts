@@ -335,7 +335,7 @@ export async function executePipeline(
     // ── Stage 2: Status bar update ──
     callbacks.onWorkStatus({ $k: 'status-bar' })
 
-    const statusBarRequest = buildStatusBarUpdateRequest(effectiveConfig, messages, userInstruction, simulatorContent)
+    const statusBarRequest = buildStatusBarUpdateRequest(effectiveConfig, messages, userInstruction, simulatorContent, toolInteractions.length > 0 ? toolInteractions : undefined)
     const statusBarApi = resolveApi(config, 'statusBar')
 
     let statusBar = (messages.findLast(m => m.$k === 'simulator') as SimulatorMessage | undefined)?.statusBar ?? ''

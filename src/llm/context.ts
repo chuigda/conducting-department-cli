@@ -62,7 +62,8 @@ export function buildStatusBarUpdateRequest(
     config: AppConfig,
     messages: Message[],
     userInstruction: string,
-    simulatorOutput: string
+    simulatorOutput: string,
+    toolInteractions?: import('../chat_message').ToolInteraction[]
 ): ChatCompletionRequest {
     const systemPrompt = buildStatusBarUpdaterSystemPrompt(
         config.simulatorCHR,
@@ -81,7 +82,8 @@ export function buildStatusBarUpdateRequest(
         lastSimulatorOutput,
         prevStatusBar,
         userInstruction,
-        simulatorOutput
+        simulatorOutput,
+        toolInteractions
     )
 
     return buildRequest(config.statusBarConfig, [
