@@ -98,11 +98,13 @@ export interface CliArgs {
     configPath: string
     simulatorPath: string
     addonPaths: string[]
+    loadPath?: string
 }
 
 export function parseCliArgs(argv: string[]): CliArgs {
     let configPath = 'config.toml'
     let simulatorPath = ''
+    let loadPath: string | undefined
     const addonPaths: string[] = []
 
     for (let i = 0; i < argv.length; i++) {
@@ -120,14 +122,18 @@ export function parseCliArgs(argv: string[]): CliArgs {
             case '-a':
                 addonPaths.push(argv[++i] ?? '')
                 break
+            case '--load':
+            case '-l':
+                loadPath = argv[++i] ?? ''
+                break
         }
     }
 
-    if (!simulatorPath) {
-        throw new Error('Missing required argument: --simulator <path.chr.toml>')
+    if (!loadPath && !simulatorPath) {
+        throw new Error('Missing required argument: --simulator <path.chr.toml> or --load <session.json>')
     }
 
-    return { configPath, simulatorPath, addonPaths: addonPaths.filter(Boolean) }
+    return { configPath, simulatorPath, addonPaths: addonPaths.filter(Boolean), loadPath: loadPath || undefined }
 }
 
 // ── File Loading ──
@@ -162,6 +168,11 @@ export async function loadConfig(args: CliArgs): Promise<AppConfig> {
     const additionalCHRs: AdditionalCHR[] = []
     for (const path of args.addonPaths) {
         const addon = await readTomlFile(path) as unknown as AdditionalCHR
+        // Derive id from filename if not set in the file
+        if (!addon.id) {
+            const basename = path.replace(/\\/g, '/').split('/').pop() ?? path
+            addon.id = basename.replace(/\.chr\.toml$|\.toml$/, '')
+        }
         additionalCHRs.push(addon)
     }
 

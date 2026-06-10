@@ -20,7 +20,11 @@ export interface ErrorMessage extends MessageBase<'error'> {
     content: string
 }
 
-export type Message = SimulatorMessage | PlayerMessage | ErrorMessage
+export interface InfoMessage extends MessageBase<'info'> {
+    content: string
+}
+
+export type Message = SimulatorMessage | PlayerMessage | ErrorMessage | InfoMessage
 
 export type WorkStatus =
     | { $k: 'idle' }

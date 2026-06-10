@@ -9,6 +9,10 @@ import {
     inputText, setInputText,
     sendInstruction,
     getStatusText,
+    parseCommand,
+    addErrorMessage,
+    addInfoMessage,
+    clearErrors,
 } from '../store'
 
 const dimmed = '#888888'
@@ -44,14 +48,26 @@ export function ChatPanel() {
     function handleSubmit() {
         // Read directly from the textarea renderable
         const text = (textareaRef?.plainText ?? inputText()).trim()
-        if (!text || isSending()) return
-        sendInstruction(text)
+        if (!text) return
+
         // Clear the textarea
         if (textareaRef) {
             textareaRef.selectAll()
             textareaRef.deleteSelection()
         }
         setInputText('')
+
+        // Handle slash commands
+        if (text.startsWith('/')) {
+            clearErrors()
+            const result = parseCommand(text)
+            if (result.$k === 'error') addErrorMessage(result.message)
+            else if (result.$k === 'info') addInfoMessage(result.message)
+            return
+        }
+
+        if (isSending()) return
+        sendInstruction(text)
     }
 
     function handleKeyDown(event: KeyEvent) {

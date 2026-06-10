@@ -19,6 +19,7 @@ import {
     splitSimulatorOutput,
 } from './context'
 import { computePreciseMemoryInUse } from './prompt_builder'
+import { getActiveAddons } from '../store'
 
 export interface PipelineCallbacks {
     onStreamingDelta: (accumulated: string) => void
@@ -43,7 +44,10 @@ export async function executePipeline(
     // ── Stage 1: Simulator streaming ──
     callbacks.onWorkStatus({ $k: 'waiting' })
 
-    const simRequest = buildSimulationRequest(config, messages, userInstruction)
+    // Use active addons (respecting enable/disable and order)
+    const effectiveConfig: AppConfig = { ...config, additionalCHRs: getActiveAddons() }
+
+    const simRequest = buildSimulationRequest(effectiveConfig, messages, userInstruction)
     const simApi = resolveApi(config, 'chat')
 
     let accumulated = ''
@@ -77,7 +81,7 @@ export async function executePipeline(
     // ── Stage 2: Status bar update ──
     callbacks.onWorkStatus({ $k: 'status-bar' })
 
-    const statusBarRequest = buildStatusBarUpdateRequest(config, messages, userInstruction, simulatorContent)
+    const statusBarRequest = buildStatusBarUpdateRequest(effectiveConfig, messages, userInstruction, simulatorContent)
     const statusBarApi = resolveApi(config, 'statusBar')
 
     let statusBar = (messages.findLast(m => m.$k === 'simulator') as SimulatorMessage | undefined)?.statusBar ?? ''
@@ -114,7 +118,7 @@ export async function executePipeline(
     if (activeLines.length > config.preciseMemoryLimit) {
         callbacks.onWorkStatus({ $k: 'compressing' })
 
-        const compressRequest = buildMemoryCompressRequest(config, messagesWithNew, config.compressPerTime)
+        const compressRequest = buildMemoryCompressRequest(effectiveConfig, messagesWithNew, config.compressPerTime)
         const memoryApi = resolveApi(config, 'memory')
 
         try {

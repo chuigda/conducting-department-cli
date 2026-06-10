@@ -28,6 +28,7 @@ export interface SimulatorCHR {
 }
 
 export interface AdditionalCHR {
+    id: string
     name?: string
     statusBar?: StatusBarConfig
     simulator?: SimulatorConfig

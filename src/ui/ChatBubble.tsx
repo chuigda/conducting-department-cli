@@ -6,6 +6,8 @@ const dimmed = '#888888'
 const simulatorFg = '#0055aa'
 const playerFg = '#007744'
 const errorFg = '#cc0000'
+const infoFg = '#555555'
+const infoBorder = '#5599cc'
 const bubbleBg = '#e8e8e8'
 
 // Markdown syntax style for light theme
@@ -32,6 +34,7 @@ export function ChatBubble(props: ChatBubbleProps) {
             case 'simulator': return '模拟器'
             case 'player': return '指挥部'
             case 'error': return '错误'
+            case 'info': return '提示'
         }
     }
 
@@ -40,6 +43,7 @@ export function ChatBubble(props: ChatBubbleProps) {
             case 'simulator': return simulatorFg
             case 'player': return playerFg
             case 'error': return errorFg
+            case 'info': return infoFg
         }
     }
 
@@ -62,6 +66,22 @@ export function ChatBubble(props: ChatBubbleProps) {
             >
                 <text fg={errorFg} content={roleLabel()} attributes={TextAttributes.BOLD} />
                 <text wrapMode="word" fg={errorFg} content={props.message.content} />
+            </box>
+        )
+    }
+
+    if (props.message.$k === 'info') {
+        return (
+            <box
+                width="100%"
+                flexDirection="column"
+                paddingX={1}
+                paddingY={1}
+                border={["left"]}
+                borderColor={infoBorder}
+            >
+                <text fg={infoFg} content={roleLabel()} attributes={TextAttributes.BOLD} />
+                <text wrapMode="word" fg={infoFg} content={props.message.content} />
             </box>
         )
     }
