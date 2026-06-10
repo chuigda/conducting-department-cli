@@ -1,6 +1,12 @@
 import { TextAttributes, SyntaxStyle, RGBA } from '@opentui/core'
 import { For, Show } from 'solid-js'
-import type { Message, SimulatorMessage } from '../chat_message'
+import type { Message, SimulatorMessage, ToolInteraction } from '../chat_message'
+
+function extractBubbleKeyArg(interaction: ToolInteraction): string {
+    switch (interaction.$k) {
+        case 'ask_question': return interaction.prompt
+    }
+}
 
 const fg = '#000000'
 const dimmed = '#888888'
@@ -105,7 +111,7 @@ export function ChatBubble(props: ChatBubbleProps) {
                     {(interaction) => (
                         <text
                             fg={dimmed}
-                            content={`⚙ tool call: tool=ask_question, arguments="${interaction.prompt}", result=success`}
+                            content={`⚙ tool call: tool=${interaction.$k}, arguments="${extractBubbleKeyArg(interaction)}", result=${interaction.success ? 'success' : 'fail'}`}
                         />
                     )}
                 </For>

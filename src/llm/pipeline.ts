@@ -53,17 +53,11 @@ const ASK_QUESTION_TOOL: ToolDefinition = {
 const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL]
 
 /**
- * Extract the most important argument from a tool call for display purposes.
+ * Extract the most important argument from a tool interaction for display purposes.
  */
-function extractKeyArgument(toolName: string, rawArgs: string): string {
-    try {
-        const args = JSON.parse(rawArgs)
-        switch (toolName) {
-            case 'ask_question': return args.prompt ?? rawArgs
-            default: return rawArgs
-        }
-    } catch {
-        return rawArgs
+function extractKeyArgument(interaction: ToolInteraction): string {
+    switch (interaction.$k) {
+        case 'ask_question': return interaction.prompt
     }
 }
 
@@ -171,10 +165,11 @@ export async function executePipeline(
                 const options = args.options ?? []
                 const answer = await showQuestion(args.prompt, options)
 
-                toolInteractions.push({ prompt: args.prompt, options, answer })
+                const interaction: ToolInteraction = { $k: 'ask_question', success: true, prompt: args.prompt, options, answer }
+                toolInteractions.push(interaction)
 
                 // Log tool call in streaming bubble
-                const keyArg = extractKeyArgument('ask_question', toolCall.function.arguments)
+                const keyArg = extractKeyArgument(interaction)
                 setToolCallLog(prev => [...prev, `⚙ tool call: tool=ask_question, arguments="${keyArg}", result=success`])
 
                 // Append tool result message
@@ -185,8 +180,7 @@ export async function executePipeline(
                 }]
             } else {
                 // Unknown tool — return error
-                const keyArg = extractKeyArgument(toolCall.function.name, toolCall.function.arguments)
-                setToolCallLog(prev => [...prev, `⚙ tool call: tool=${toolCall.function.name}, arguments="${keyArg}", result=fail`])
+                setToolCallLog(prev => [...prev, `⚙ tool call: tool=${toolCall.function.name}, arguments="${toolCall.function.arguments}", result=fail`])
                 turnMessages = [...turnMessages, {
                     role: 'tool',
                     content: `Error: unknown tool "${toolCall.function.name}"`,

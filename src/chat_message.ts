@@ -2,11 +2,18 @@ export interface MessageBase<K extends string> {
     $k: K
 }
 
-export interface ToolInteraction {
+export interface ToolInteractionBase<K extends string> {
+    $k: K
+    success: boolean
+}
+
+export interface AskQuestionInteraction extends ToolInteractionBase<'ask_question'> {
     prompt: string
     options: string[]
     answer: string
 }
+
+export type ToolInteraction = AskQuestionInteraction
 
 export interface SimulatorMessage extends MessageBase<'simulator'> {
     content: string
