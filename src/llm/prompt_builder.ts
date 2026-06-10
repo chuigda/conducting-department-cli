@@ -80,6 +80,7 @@ function extractToolKeyArgument(ti: ToolInteraction): string {
     switch (ti.$k) {
         case 'ask_question': return ti.prompt
         case 'read': return ti.path
+        case 'glob': return ti.pattern
     }
 }
 
@@ -87,6 +88,7 @@ function extractToolKeyResult(ti: ToolInteraction): string {
     switch (ti.$k) {
         case 'ask_question': return ti.answer
         case 'read': return ti.success ? ti.result : `Error: ${ti.result}`
+        case 'glob': return ti.success ? ti.result : `Error: ${ti.result}`
     }
 }
 

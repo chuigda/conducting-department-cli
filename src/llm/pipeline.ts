@@ -70,7 +70,25 @@ const READ_TOOL: ToolDefinition = {
     },
 }
 
-const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL, READ_TOOL]
+const GLOB_TOOL: ToolDefinition = {
+    type: 'function',
+    function: {
+        name: 'glob',
+        description: 'Find files matching a glob pattern within the current working directory. Returns a list of matching file paths.',
+        parameters: {
+            type: 'object',
+            properties: {
+                pattern: {
+                    type: 'string',
+                    description: 'Glob pattern to match files (e.g. "**/*.ts", "src/**/*.md").',
+                },
+            },
+            required: ['pattern'],
+        },
+    },
+}
+
+const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL, READ_TOOL, GLOB_TOOL]
 
 /**
  * Execute the read tool. Returns the file content or directory listing.
@@ -105,12 +123,33 @@ function executeRead(path: string): { success: boolean; result: string } {
 }
 
 /**
+ * Execute the glob tool. Returns matching file paths within cwd.
+ */
+function executeGlob(pattern: string): { success: boolean; result: string } {
+    const cwd = process.cwd()
+    try {
+        const glob = new Bun.Glob(pattern)
+        const matches: string[] = []
+        for (const path of glob.scanSync({ cwd, dot: false })) {
+            matches.push(path)
+        }
+        if (matches.length === 0) {
+            return { success: true, result: '(no matches)' }
+        }
+        return { success: true, result: matches.join('\n') }
+    } catch (err) {
+        return { success: false, result: `Error: ${(err as Error).message}` }
+    }
+}
+
+/**
  * Extract the most important argument from a tool interaction for display purposes.
  */
 function extractKeyArgument(interaction: ToolInteraction): string {
     switch (interaction.$k) {
         case 'ask_question': return interaction.prompt
         case 'read': return interaction.path
+        case 'glob': return interaction.pattern
     }
 }
 
@@ -246,6 +285,27 @@ export async function executePipeline(
 
                 const keyArg = extractKeyArgument(interaction)
                 setToolCallLog(prev => [...prev, `⚙ tool call: tool=read, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
+
+                turnMessages = [...turnMessages, {
+                    role: 'tool',
+                    content: result,
+                    tool_call_id: toolCall.id,
+                }]
+            } else if (toolCall.function.name === 'glob') {
+                let args: { pattern: string }
+                try {
+                    args = JSON.parse(toolCall.function.arguments)
+                } catch {
+                    args = { pattern: toolCall.function.arguments }
+                }
+
+                const { success, result } = executeGlob(args.pattern)
+
+                const interaction: ToolInteraction = { $k: 'glob', success, pattern: args.pattern, result }
+                toolInteractions.push(interaction)
+
+                const keyArg = extractKeyArgument(interaction)
+                setToolCallLog(prev => [...prev, `⚙ tool call: tool=glob, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
 
                 turnMessages = [...turnMessages, {
                     role: 'tool',

@@ -6,6 +6,7 @@ function extractBubbleKeyArg(interaction: ToolInteraction): string {
     switch (interaction.$k) {
         case 'ask_question': return interaction.prompt
         case 'read': return interaction.path
+        case 'glob': return interaction.pattern
     }
 }
 

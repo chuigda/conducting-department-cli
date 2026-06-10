@@ -18,7 +18,12 @@ export interface ReadInteraction extends ToolInteractionBase<'read'> {
     result: string
 }
 
-export type ToolInteraction = AskQuestionInteraction | ReadInteraction
+export interface GlobInteraction extends ToolInteractionBase<'glob'> {
+    pattern: string
+    result: string
+}
+
+export type ToolInteraction = AskQuestionInteraction | ReadInteraction | GlobInteraction
 
 export interface SimulatorMessage extends MessageBase<'simulator'> {
     content: string
