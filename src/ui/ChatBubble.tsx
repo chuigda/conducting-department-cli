@@ -5,7 +5,7 @@ import type { Message, SimulatorMessage, ToolInteraction } from '../chat_message
 function extractBubbleKeyArg(interaction: ToolInteraction): string {
     switch (interaction.$k) {
         case 'ask_question': return interaction.prompt
-        case 'read_file': return interaction.path
+        case 'read': return interaction.path
     }
 }
 

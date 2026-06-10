@@ -12,7 +12,7 @@
 import { join } from 'path'
 import type { SimulatorCHR, AdditionalCHR, LanguageSelector } from './chr_file'
 import { LanguageConfigs } from './chr_file'
-import type { Message, SimulatorMessage } from '../chat_message'
+import type { Message, SimulatorMessage, ToolInteraction } from '../chat_message'
 
 // ── Template Loading ──
 
@@ -67,6 +67,27 @@ function concat(a?: string, b?: string): string | undefined {
 function sanitize(s?: string): string {
     if (!isDefined(s) || isBlank(s)) return ''
     return s.endsWith('\n') ? s : `${s}\n`
+}
+
+/** Format a ToolInteraction as XML for inclusion in prompts */
+function formatToolInteractionXml(ti: ToolInteraction): string {
+    const keyArg = extractToolKeyArgument(ti)
+    const keyResult = extractToolKeyResult(ti)
+    return `  <tool-call tool="${ti.$k}">\n    <arguments>${keyArg}</arguments>\n    <result>${keyResult}</result>\n  </tool-call>\n`
+}
+
+function extractToolKeyArgument(ti: ToolInteraction): string {
+    switch (ti.$k) {
+        case 'ask_question': return ti.prompt
+        case 'read': return ti.path
+    }
+}
+
+function extractToolKeyResult(ti: ToolInteraction): string {
+    switch (ti.$k) {
+        case 'ask_question': return ti.answer
+        case 'read': return ti.success ? ti.result : `Error: ${ti.result}`
+    }
 }
 
 /** Ensure string has leading and trailing newline for inline numbered lists */
@@ -153,7 +174,13 @@ export function buildSimulatorUserPrompt(
         if (msg.$k === 'player') {
             r += `<conducting-department>\n${sanitize(msg.content)}</conducting-department>\n`
         } else if (msg.$k === 'simulator') {
-            r += `<simulator>\n${sanitize(msg.content)}</simulator>\n`
+            r += '<simulator>\n'
+            if (msg.toolInteractions?.length) {
+                for (const ti of msg.toolInteractions) {
+                    r += formatToolInteractionXml(ti)
+                }
+            }
+            r += `${sanitize(msg.content)}</simulator>\n`
         }
     }
     if (inlineMessages.length > 0) {

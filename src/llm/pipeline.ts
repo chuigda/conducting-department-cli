@@ -52,10 +52,10 @@ const ASK_QUESTION_TOOL: ToolDefinition = {
     },
 }
 
-const READ_FILE_TOOL: ToolDefinition = {
+const READ_TOOL: ToolDefinition = {
     type: 'function',
     function: {
-        name: 'read_file',
+        name: 'read',
         description: 'Read the contents of a file or list the entries of a directory. The path must be within the current working directory.',
         parameters: {
             type: 'object',
@@ -70,13 +70,13 @@ const READ_FILE_TOOL: ToolDefinition = {
     },
 }
 
-const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL, READ_FILE_TOOL]
+const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL, READ_TOOL]
 
 /**
- * Execute the read_file tool. Returns the file content or directory listing.
+ * Execute the read tool. Returns the file content or directory listing.
  * Rejects paths outside process.cwd().
  */
-function executeReadFile(path: string): { success: boolean; result: string } {
+function executeRead(path: string): { success: boolean; result: string } {
     const cwd = process.cwd()
     const resolved = resolve(cwd, path)
     const rel = relative(cwd, resolved)
@@ -110,7 +110,7 @@ function executeReadFile(path: string): { success: boolean; result: string } {
 function extractKeyArgument(interaction: ToolInteraction): string {
     switch (interaction.$k) {
         case 'ask_question': return interaction.prompt
-        case 'read_file': return interaction.path
+        case 'read': return interaction.path
     }
 }
 
@@ -231,7 +231,7 @@ export async function executePipeline(
                     content: answer,
                     tool_call_id: toolCall.id,
                 }]
-            } else if (toolCall.function.name === 'read_file') {
+            } else if (toolCall.function.name === 'read') {
                 let args: { path: string }
                 try {
                     args = JSON.parse(toolCall.function.arguments)
@@ -239,13 +239,13 @@ export async function executePipeline(
                     args = { path: toolCall.function.arguments }
                 }
 
-                const { success, result } = executeReadFile(args.path)
+                const { success, result } = executeRead(args.path)
 
-                const interaction: ToolInteraction = { $k: 'read_file', success, path: args.path, result }
+                const interaction: ToolInteraction = { $k: 'read', success, path: args.path, result }
                 toolInteractions.push(interaction)
 
                 const keyArg = extractKeyArgument(interaction)
-                setToolCallLog(prev => [...prev, `⚙ tool call: tool=read_file, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
+                setToolCallLog(prev => [...prev, `⚙ tool call: tool=read, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
 
                 turnMessages = [...turnMessages, {
                     role: 'tool',
