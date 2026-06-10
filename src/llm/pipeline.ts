@@ -11,6 +11,8 @@
  * 5. Push final SimulatorMessage to store
  */
 
+import { resolve, relative } from 'path'
+import { readdirSync, statSync, readFileSync } from 'node:fs'
 import type { AppConfig } from '../config'
 import { resolveApi } from '../config'
 import type { SimulatorMessage, Message, ToolInteraction } from '../chat_message'
@@ -50,7 +52,57 @@ const ASK_QUESTION_TOOL: ToolDefinition = {
     },
 }
 
-const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL]
+const READ_FILE_TOOL: ToolDefinition = {
+    type: 'function',
+    function: {
+        name: 'read_file',
+        description: 'Read the contents of a file or list the entries of a directory. The path must be within the current working directory.',
+        parameters: {
+            type: 'object',
+            properties: {
+                path: {
+                    type: 'string',
+                    description: 'Relative or absolute path to the file or directory to read.',
+                },
+            },
+            required: ['path'],
+        },
+    },
+}
+
+const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL, READ_FILE_TOOL]
+
+/**
+ * Execute the read_file tool. Returns the file content or directory listing.
+ * Rejects paths outside process.cwd().
+ */
+function executeReadFile(path: string): { success: boolean; result: string } {
+    const cwd = process.cwd()
+    const resolved = resolve(cwd, path)
+    const rel = relative(cwd, resolved)
+
+    // Reject paths that escape cwd
+    if (rel.startsWith('..') || resolve(resolved) !== resolved && rel.startsWith('..')) {
+        return { success: false, result: `Error: path "${path}" is outside the working directory.` }
+    }
+    // Extra check: resolved must start with cwd
+    if (!resolved.startsWith(cwd)) {
+        return { success: false, result: `Error: path "${path}" is outside the working directory.` }
+    }
+
+    try {
+        const stat = statSync(resolved)
+        if (stat.isDirectory()) {
+            const entries = readdirSync(resolved)
+            return { success: true, result: entries.join('\n') }
+        } else {
+            const content = readFileSync(resolved, 'utf-8')
+            return { success: true, result: content }
+        }
+    } catch (err) {
+        return { success: false, result: `Error: ${(err as Error).message}` }
+    }
+}
 
 /**
  * Extract the most important argument from a tool interaction for display purposes.
@@ -58,6 +110,7 @@ const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL]
 function extractKeyArgument(interaction: ToolInteraction): string {
     switch (interaction.$k) {
         case 'ask_question': return interaction.prompt
+        case 'read_file': return interaction.path
     }
 }
 
@@ -176,6 +229,27 @@ export async function executePipeline(
                 turnMessages = [...turnMessages, {
                     role: 'tool',
                     content: answer,
+                    tool_call_id: toolCall.id,
+                }]
+            } else if (toolCall.function.name === 'read_file') {
+                let args: { path: string }
+                try {
+                    args = JSON.parse(toolCall.function.arguments)
+                } catch {
+                    args = { path: toolCall.function.arguments }
+                }
+
+                const { success, result } = executeReadFile(args.path)
+
+                const interaction: ToolInteraction = { $k: 'read_file', success, path: args.path, result }
+                toolInteractions.push(interaction)
+
+                const keyArg = extractKeyArgument(interaction)
+                setToolCallLog(prev => [...prev, `⚙ tool call: tool=read_file, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
+
+                turnMessages = [...turnMessages, {
+                    role: 'tool',
+                    content: result,
                     tool_call_id: toolCall.id,
                 }]
             } else {

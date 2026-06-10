@@ -13,7 +13,12 @@ export interface AskQuestionInteraction extends ToolInteractionBase<'ask_questio
     answer: string
 }
 
-export type ToolInteraction = AskQuestionInteraction
+export interface ReadFileInteraction extends ToolInteractionBase<'read_file'> {
+    path: string
+    result: string
+}
+
+export type ToolInteraction = AskQuestionInteraction | ReadFileInteraction
 
 export interface SimulatorMessage extends MessageBase<'simulator'> {
     content: string
