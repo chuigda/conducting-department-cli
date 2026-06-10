@@ -121,10 +121,10 @@ async function main() {
 
     // ── Render UI ──
     // Use onDestroy to save session synchronously before the process exits.
-    // OpenTUI's exitOnCtrlC triggers renderer.destroy() internally, so async
-    // signal handlers would race against process termination.
+    // Ctrl+D triggers renderer.destroy() via useKeyboard in App.tsx.
+    // Ctrl+C is repurposed for copy-selection.
     render(() => <App />, {
-        exitOnCtrlC: true,
+        exitOnCtrlC: false,
         useMouse: true,
         screenMode: "alternate-screen",
         onDestroy: () => {

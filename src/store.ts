@@ -331,7 +331,7 @@ export function openEditor(target: EditTarget): boolean {
             const msg = messages[target.index]
             if (!msg) return false
             draft = msg.content
-            label = `编辑消息 #${target.index + 1} (${msg.$k === 'simulator' ? '模拟器' : msg.$k === 'player' ? '指挥部' : '错误'})`
+            label = `编辑消息 #${target.index + 1} (${msg.$k === 'simulator' ? '模拟器' : msg.$k === 'player' ? '导演部' : '错误'})`
             break
         }
         case 'message-summary': {

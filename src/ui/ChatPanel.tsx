@@ -1,4 +1,5 @@
 import { TextAttributes, SyntaxStyle, RGBA, type KeyEvent, type TextareaRenderable } from '@opentui/core'
+import { useRenderer } from '@opentui/solid'
 import { createSignal, For, Show } from 'solid-js'
 import { ChatBubble } from './ChatBubble'
 import {
@@ -39,6 +40,7 @@ export function ChatPanel() {
     let textareaRef: TextareaRenderable | undefined
     let cancelTimer: ReturnType<typeof setTimeout> | null = null
     const [showCancelHint, setShowCancelHint] = createSignal(false)
+    const renderer = useRenderer()
 
     const statusColor = () => {
         const s = workStatus()
@@ -74,6 +76,21 @@ export function ChatPanel() {
     }
 
     function handleKeyDown(event: KeyEvent) {
+        // Ctrl+D → exit
+        if (event.ctrl && event.name === 'd') {
+            renderer.destroy()
+            return
+        }
+        // Ctrl+C → copy textarea selection to clipboard (if any)
+        if (event.ctrl && event.name === 'c') {
+            if (textareaRef) {
+                const sel = textareaRef.getSelectedText?.() ?? ''
+                if (sel) {
+                    renderer.copyToClipboardOSC52(sel)
+                }
+            }
+            return
+        }
         if (event.name === 'escape' && !event.ctrl && !event.shift && !event.meta) {
             if (!isSending()) return
             if (showCancelHint()) {
@@ -152,7 +169,7 @@ export function ChatPanel() {
                     ref={textareaRef}
                     height={5}
                     width="100%"
-                    placeholder="输入指令... (Enter 发送)"
+                    placeholder="输入指令... (Enter 发送, Ctrl+D 退出)"
                     backgroundColor={bubbleBg}
                     textColor="#000000"
                     focusedBackgroundColor={bubbleBg}

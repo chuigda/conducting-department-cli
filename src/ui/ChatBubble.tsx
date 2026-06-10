@@ -34,7 +34,7 @@ export function ChatBubble(props: ChatBubbleProps) {
         const idx = props.reverseIndex
         switch (props.message.$k) {
             case 'simulator': return idx != null ? `模拟器 #${idx}` : '模拟器'
-            case 'player': return idx != null ? `指挥部 #${idx}` : '指挥部'
+            case 'player': return idx != null ? `导演部 #${idx}` : '导演部'
             case 'error': return '错误'
             case 'info': return '提示'
         }
