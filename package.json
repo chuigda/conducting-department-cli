@@ -12,6 +12,7 @@
   "dependencies": {
     "@opentui/core": "^0.4.0",
     "@opentui/solid": "^0.4.0",
+    "smol-toml": "^1.6.1",
     "solid-js": "^1.9.13"
   }
 }

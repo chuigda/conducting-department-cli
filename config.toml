@@ -1,0 +1,21 @@
+[api]
+url = "https://api.openai.com/v1/chat/completions"
+key = "sk-test-placeholder"
+
+[chat]
+model = "claude-sonnet-4-20250514"
+temperature = 0.6
+
+[statusBar]
+model = "gemini-2.5-flash"
+temperature = 0.05
+
+[memory]
+model = "gemini-2.5-flash"
+temperature = 0.05
+
+[pipeline]
+outputBudget = 1024
+inlineMessageLimit = 5
+preciseMemoryLimit = 20
+compressPerTime = 5
