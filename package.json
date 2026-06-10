@@ -1,0 +1,17 @@
+{
+  "name": "conducting-department-cli",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@opentui/core": "^0.4.0",
+    "@opentui/solid": "^0.4.0",
+    "solid-js": "^1.9.13"
+  }
+}
