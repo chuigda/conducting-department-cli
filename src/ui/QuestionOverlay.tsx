@@ -7,13 +7,13 @@ import {
     skipQuestion,
 } from '../store'
 
-const overlayBg = '#1a1a2e'
-const headerFg = '#e0e0ff'
-const hintFg = '#888899'
-const optionBg = '#2a2a4a'
-const selectedOptionBg = '#4a4a8a'
-const optionFg = '#ffffff'
-const inputBg = '#2a2a3e'
+const overlayBg = '#f0f0f0'
+const headerFg = '#000000'
+const hintFg = '#666666'
+const optionBg = '#e0e0e0'
+const selectedOptionBg = '#c0c0ff'
+const optionFg = '#000000'
+const inputBg = '#ffffff'
 
 export function QuestionOverlay() {
     const [selectedIndex, setSelectedIndex] = createSignal(0)
@@ -45,14 +45,18 @@ export function QuestionOverlay() {
                 setSelectedIndex(i => Math.max(0, i - 1))
             } else if (key.name === 'down' || key.name === 'j') {
                 setSelectedIndex(i => Math.min(opts.length - 1, i + 1))
-            } else if (key.name === 'return') {
+            } else if (key.name === 'return' && !key.ctrl) {
                 const answer = opts[selectedIndex()]
                 if (answer) answerQuestion(answer)
             }
         } else {
-            // Input mode
-            if (key.name === 'return' && freeInput().trim()) {
-                answerQuestion(freeInput().trim())
+            // Input mode: Ctrl+Enter or Ctrl+S to submit, Enter to newline
+            if ((key.name === 'return' && key.ctrl) || (key.name === 's' && key.ctrl)) {
+                if (freeInput().trim()) {
+                    answerQuestion(freeInput().trim())
+                }
+            } else if (key.name === 'return' && !key.ctrl) {
+                setFreeInput(s => s + '\n')
             } else if (key.name === 'backspace') {
                 setFreeInput(s => s.slice(0, -1))
             } else if (key.sequence && !key.ctrl && !key.meta && key.sequence.length === 1) {
@@ -79,7 +83,7 @@ export function QuestionOverlay() {
 
             {/* Question prompt */}
             <box marginBottom={1} width="100%">
-                <text fg="#ffffff" content={state().prompt} />
+                <text fg="#000000" content={state().prompt} />
             </box>
 
             {/* Options list (if any) */}
@@ -127,7 +131,7 @@ export function QuestionOverlay() {
 
             {/* Hints */}
             <box marginTop={2} width="100%">
-                <text fg={hintFg} content="Enter 提交 | Escape 跳过 | Tab 切换模式" />
+                <text fg={hintFg} content="Ctrl+Enter / Ctrl+S 提交 | Escape 跳过 | Tab 切换模式" />
             </box>
         </box>
     )

@@ -29,8 +29,8 @@ export function EditOverlay() {
     })
 
     const handleKeyDown = (e: KeyEvent) => {
-        // Ctrl+S to save
-        if (e.name === 's' && e.ctrl && !e.shift && !e.meta) {
+        // Ctrl+S or Ctrl+Enter to save
+        if ((e.name === 's' || e.name === 'return') && e.ctrl && !e.shift && !e.meta) {
             e.preventDefault?.()
             const textarea = ref()
             if (textarea) setEditorDraft(textarea.plainText)
@@ -61,7 +61,7 @@ export function EditOverlay() {
                     attributes={TextAttributes.BOLD}
                     flexGrow={1}
                 />
-                <text fg={hintFg} content="Ctrl+S 保存 | Escape 取消" />
+                <text fg={hintFg} content="Ctrl+S / Ctrl+Enter 保存 | Escape 取消" />
             </box>
 
             {/* Textarea */}

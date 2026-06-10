@@ -15,6 +15,7 @@ import {
     addInfoMessage,
     clearErrors,
     cancelGeneration,
+    toolCallLog,
 } from '../store'
 
 const dimmed = '#888888'
@@ -109,7 +110,18 @@ export function ChatPanel() {
             return
         }
         if (event.name === 'return' && !event.ctrl && !event.shift && !event.meta) {
+            // Enter → newline (default behavior, don't intercept)
+            return
+        }
+        if (event.name === 'return' && event.ctrl && !event.shift && !event.meta) {
+            event.preventDefault?.()
             handleSubmit()
+            return
+        }
+        if (event.name === 's' && event.ctrl && !event.shift && !event.meta) {
+            event.preventDefault?.()
+            handleSubmit()
+            return
         }
     }
 
@@ -141,7 +153,7 @@ export function ChatPanel() {
                     </For>
 
                     {/* Streaming bubble */}
-                    <Show when={streamingContent()}>
+                    <Show when={isSending()}>
                         <box
                             width="100%"
                             backgroundColor={bubbleBg}
@@ -150,14 +162,19 @@ export function ChatPanel() {
                             paddingY={1}
                         >
                             <text fg={streamFg} content="模拟器 (生成中...)" attributes={TextAttributes.BOLD} />
-                            <markdown
-                                content={streamingContent()}
-                                syntaxStyle={mdStyle}
-                                fg="#000000"
-                                bg={bubbleBg}
-                                streaming={true}
-                                width="100%"
-                            />
+                            <For each={toolCallLog()}>
+                                {(line) => <text fg={dimmed} content={line} />}
+                            </For>
+                            <Show when={streamingContent()}>
+                                <markdown
+                                    content={streamingContent()}
+                                    syntaxStyle={mdStyle}
+                                    fg="#000000"
+                                    bg={bubbleBg}
+                                    streaming={true}
+                                    width="100%"
+                                />
+                            </Show>
                         </box>
                     </Show>
                 </box>
@@ -169,15 +186,12 @@ export function ChatPanel() {
                     ref={textareaRef}
                     height={5}
                     width="100%"
-                    placeholder="输入指令... (Enter 发送, Ctrl+D 退出)"
+                    placeholder="输入指令... (Ctrl+Enter 发送, Ctrl+D 退出)"
                     backgroundColor={bubbleBg}
                     textColor="#000000"
                     focusedBackgroundColor={bubbleBg}
                     focusedTextColor="#000000"
                     placeholderColor={dimmed}
-                    keyBindings={[
-                        { name: "return", action: "submit" },
-                    ]}
                     focused
                     onKeyDown={handleKeyDown}
                     onContentChange={(val: any) => setInputText(typeof val === 'string' ? val : val.content ?? '')}

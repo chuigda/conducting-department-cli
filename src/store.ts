@@ -82,6 +82,9 @@ const [messages, setMessages] = createStore<Message[]>([])
 // ── Streaming state ──
 const [streamingContent, setStreamingContent] = createSignal('')
 
+// ── Tool call log (displayed in streaming bubble) ──
+const [toolCallLog, setToolCallLog] = createSignal<string[]>([])
+
 // ── Work status ──
 const [workStatus, setWorkStatus] = createSignal<WorkStatus>({ $k: 'idle' })
 
@@ -123,6 +126,7 @@ let currentAbortController: AbortController | null = null
 export {
     messages, setMessages,
     streamingContent, setStreamingContent,
+    toolCallLog, setToolCallLog,
     workStatus, setWorkStatus,
     isSending, setIsSending,
     inputText, setInputText,
@@ -238,6 +242,7 @@ export async function sendInstruction(instruction: string) {
 
     setIsSending(true)
     setStreamingContent('')
+    setToolCallLog([])
     setInputText('')
 
     // Create abort controller for this generation

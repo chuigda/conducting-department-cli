@@ -23,7 +23,7 @@ import {
     splitSimulatorOutput,
 } from './context'
 import { computePreciseMemoryInUse } from './prompt_builder'
-import { getActiveAddons, showQuestion } from '../store'
+import { getActiveAddons, showQuestion, setToolCallLog } from '../store'
 
 // ── Tool definitions ──
 
@@ -51,6 +51,21 @@ const ASK_QUESTION_TOOL: ToolDefinition = {
 }
 
 const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL]
+
+/**
+ * Extract the most important argument from a tool call for display purposes.
+ */
+function extractKeyArgument(toolName: string, rawArgs: string): string {
+    try {
+        const args = JSON.parse(rawArgs)
+        switch (toolName) {
+            case 'ask_question': return args.prompt ?? rawArgs
+            default: return rawArgs
+        }
+    } catch {
+        return rawArgs
+    }
+}
 
 export interface PipelineCallbacks {
     onStreamingDelta: (accumulated: string) => void
@@ -92,6 +107,9 @@ export async function executePipeline(
 
     // Track tool interactions for the final message
     const toolInteractions: ToolInteraction[] = []
+
+    // Clear tool call log at start
+    setToolCallLog([])
 
     // Multi-turn messages for tool call loop (starts with the original request messages)
     let turnMessages: ChatMessage[] = [...simRequest.messages]
@@ -155,6 +173,10 @@ export async function executePipeline(
 
                 toolInteractions.push({ prompt: args.prompt, options, answer })
 
+                // Log tool call in streaming bubble
+                const keyArg = extractKeyArgument('ask_question', toolCall.function.arguments)
+                setToolCallLog(prev => [...prev, `⚙ tool call: tool=ask_question, arguments="${keyArg}", result=success`])
+
                 // Append tool result message
                 turnMessages = [...turnMessages, {
                     role: 'tool',
@@ -163,6 +185,8 @@ export async function executePipeline(
                 }]
             } else {
                 // Unknown tool — return error
+                const keyArg = extractKeyArgument(toolCall.function.name, toolCall.function.arguments)
+                setToolCallLog(prev => [...prev, `⚙ tool call: tool=${toolCall.function.name}, arguments="${keyArg}", result=fail`])
                 turnMessages = [...turnMessages, {
                     role: 'tool',
                     content: `Error: unknown tool "${toolCall.function.name}"`,

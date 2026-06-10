@@ -1,5 +1,6 @@
 import { TextAttributes, SyntaxStyle, RGBA } from '@opentui/core'
-import type { Message } from '../chat_message'
+import { For, Show } from 'solid-js'
+import type { Message, SimulatorMessage } from '../chat_message'
 
 const fg = '#000000'
 const dimmed = '#888888'
@@ -97,6 +98,19 @@ export function ChatBubble(props: ChatBubbleProps) {
             paddingY={1}
         >
             <text fg={roleFg()} content={roleLabel()} attributes={TextAttributes.BOLD} />
+
+            {/* Tool interactions (shown before content for simulator messages) */}
+            <Show when={props.message.$k === 'simulator' && (props.message as SimulatorMessage).toolInteractions?.length}>
+                <For each={(props.message as SimulatorMessage).toolInteractions}>
+                    {(interaction) => (
+                        <text
+                            fg={dimmed}
+                            content={`⚙ tool call: tool=ask_question, arguments="${interaction.prompt}", result=success`}
+                        />
+                    )}
+                </For>
+            </Show>
+
             <markdown
                 content={props.message.content}
                 syntaxStyle={mdStyle}
