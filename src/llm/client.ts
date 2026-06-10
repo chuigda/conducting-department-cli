@@ -1,13 +1,34 @@
 /**
  * OpenAI-compatible LLM client using Bun's native fetch.
  * Supports both streaming (SSE) and non-streaming requests.
+ * Supports tool calls (function calling).
  */
 
 import type { ApiEndpoint, LLMConfig } from '../config'
 
 export interface ChatMessage {
-    role: 'system' | 'user' | 'assistant'
-    content: string
+    role: 'system' | 'user' | 'assistant' | 'tool'
+    content: string | null
+    tool_calls?: ToolCall[]
+    tool_call_id?: string
+}
+
+export interface ToolCall {
+    id: string
+    type: 'function'
+    function: {
+        name: string
+        arguments: string
+    }
+}
+
+export interface ToolDefinition {
+    type: 'function'
+    function: {
+        name: string
+        description: string
+        parameters: Record<string, any>
+    }
 }
 
 export interface ChatCompletionRequest {
@@ -20,14 +41,17 @@ export interface ChatCompletionRequest {
     max_completion_tokens: number
     stream: boolean
     stop: string[]
+    tools?: ToolDefinition[]
 }
 
 export interface StreamCallbacks {
     onDelta: (delta: string) => void
+    onToolCallDelta?: (toolCalls: ToolCall[]) => void
 }
 
 export interface CompletionResult {
     content: string
+    toolCalls: ToolCall[]
     promptTokens: number
     completionTokens: number
 }
@@ -35,6 +59,7 @@ export interface CompletionResult {
 /**
  * Send a streaming chat completion request.
  * Calls onDelta for each content chunk; returns the accumulated result.
+ * Also accumulates tool_calls from delta chunks.
  */
 export async function streamCompletion(
     endpoint: ApiEndpoint,
@@ -42,13 +67,17 @@ export async function streamCompletion(
     callbacks: StreamCallbacks,
     signal?: AbortSignal
 ): Promise<CompletionResult> {
+    const body: Record<string, any> = { ...request, stream: true }
+    // Only include tools if defined
+    if (!request.tools?.length) delete body.tools
+
     const response = await fetch(endpoint.url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${endpoint.key}`,
         },
-        body: JSON.stringify({ ...request, stream: true }),
+        body: JSON.stringify(body),
         signal,
     })
 
@@ -68,6 +97,9 @@ export async function streamCompletion(
     let completionTokens = 0
     let buffer = ''
 
+    // Accumulate tool calls by index
+    const toolCallMap: Map<number, { id: string; name: string; arguments: string }> = new Map()
+
     while (true) {
         const { done, value } = await reader.read()
         if (done) break
@@ -86,12 +118,26 @@ export async function streamCompletion(
 
             try {
                 const chunk = JSON.parse(data)
+                const delta = chunk.choices?.[0]?.delta
 
                 // Extract content delta
-                const delta = chunk.choices?.[0]?.delta?.content
-                if (delta) {
-                    accumulated += delta
-                    callbacks.onDelta(delta)
+                if (delta?.content) {
+                    accumulated += delta.content
+                    callbacks.onDelta(delta.content)
+                }
+
+                // Extract tool_calls delta
+                if (delta?.tool_calls) {
+                    for (const tc of delta.tool_calls) {
+                        const idx = tc.index ?? 0
+                        if (!toolCallMap.has(idx)) {
+                            toolCallMap.set(idx, { id: tc.id ?? '', name: tc.function?.name ?? '', arguments: '' })
+                        }
+                        const entry = toolCallMap.get(idx)!
+                        if (tc.id) entry.id = tc.id
+                        if (tc.function?.name) entry.name = tc.function.name
+                        if (tc.function?.arguments) entry.arguments += tc.function.arguments
+                    }
                 }
 
                 // Extract usage from final chunk (some APIs include this)
@@ -105,7 +151,20 @@ export async function streamCompletion(
         }
     }
 
-    return { content: accumulated, promptTokens, completionTokens }
+    // Build final tool calls array
+    const toolCalls: ToolCall[] = [...toolCallMap.entries()]
+        .sort(([a], [b]) => a - b)
+        .map(([_, entry]) => ({
+            id: entry.id,
+            type: 'function' as const,
+            function: { name: entry.name, arguments: entry.arguments },
+        }))
+
+    if (toolCalls.length > 0) {
+        callbacks.onToolCallDelta?.(toolCalls)
+    }
+
+    return { content: accumulated, toolCalls, promptTokens, completionTokens }
 }
 
 /**
@@ -116,13 +175,16 @@ export async function completion(
     request: ChatCompletionRequest,
     signal?: AbortSignal
 ): Promise<CompletionResult> {
+    const body: Record<string, any> = { ...request, stream: false }
+    if (!request.tools?.length) delete body.tools
+
     const response = await fetch(endpoint.url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${endpoint.key}`,
         },
-        body: JSON.stringify({ ...request, stream: false }),
+        body: JSON.stringify(body),
         signal,
     })
 
@@ -133,11 +195,17 @@ export async function completion(
 
     const result: any = await response.json()
 
-    const content = result.choices?.[0]?.message?.content ?? ''
+    const message = result.choices?.[0]?.message
+    const content = message?.content ?? ''
+    const toolCalls: ToolCall[] = (message?.tool_calls ?? []).map((tc: any) => ({
+        id: tc.id,
+        type: 'function' as const,
+        function: { name: tc.function.name, arguments: tc.function.arguments },
+    }))
     const promptTokens = result.usage?.prompt_tokens ?? 0
     const completionTokens = result.usage?.completion_tokens ?? 0
 
-    return { content, promptTokens, completionTokens }
+    return { content, toolCalls, promptTokens, completionTokens }
 }
 
 /**
@@ -146,7 +214,7 @@ export async function completion(
 export function buildRequest(
     llmConfig: LLMConfig,
     messages: ChatMessage[],
-    options: { stream: boolean; maxTokens: number }
+    options: { stream: boolean; maxTokens: number; tools?: ToolDefinition[] }
 ): ChatCompletionRequest {
     return {
         model: llmConfig.model,
@@ -158,5 +226,6 @@ export function buildRequest(
         stream: options.stream,
         stop: [],
         messages,
+        tools: options.tools,
     }
 }

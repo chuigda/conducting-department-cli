@@ -3,7 +3,8 @@ import { useKeyboard, useRenderer, useSelectionHandler } from '@opentui/solid'
 import { ChatPanel } from './ChatPanel'
 import { StatusPanel } from './StatusPanel'
 import { EditOverlay } from './EditOverlay'
-import { editorState } from '../store'
+import { QuestionOverlay } from './QuestionOverlay'
+import { editorState, questionState } from '../store'
 
 export function App() {
     const renderer = useRenderer()
@@ -32,7 +33,13 @@ export function App() {
     })
 
     return (
-        <Show when={!editorState().active} fallback={<EditOverlay />}>
+        <Show when={!editorState().active && !questionState().active}
+            fallback={
+                <Show when={questionState().active} fallback={<EditOverlay />}>
+                    <QuestionOverlay />
+                </Show>
+            }
+        >
             <box
                 flexDirection="row"
                 width="100%"

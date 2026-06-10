@@ -99,6 +99,22 @@ const [editorState, setEditorState] = createSignal<EditorState>({
     label: '',
 })
 
+// ── Question state (for LLM ask_question tool) ──
+
+export interface QuestionState {
+    active: boolean
+    prompt: string
+    options: string[]
+    resolve: ((answer: string) => void) | null
+}
+
+const [questionState, setQuestionState] = createSignal<QuestionState>({
+    active: false,
+    prompt: '',
+    options: [],
+    resolve: null,
+})
+
 // ── Addon state ──
 const [addons, setAddons] = createSignal<AddonEntry[]>([])
 
@@ -111,6 +127,7 @@ export {
     isSending, setIsSending,
     inputText, setInputText,
     editorState, setEditorState,
+    questionState, setQuestionState,
     addons, setAddons,
 }
 
@@ -139,6 +156,34 @@ export function getPreciseMemoryEntries(): { text: string; active: boolean }[] {
 }
 
 // ── Actions ──
+
+/**
+ * Show a question overlay and wait for the user's answer.
+ * Returns a Promise that resolves with the user's answer string.
+ */
+export function showQuestion(prompt: string, options: string[]): Promise<string> {
+    return new Promise<string>((resolve) => {
+        setQuestionState({ active: true, prompt, options, resolve })
+    })
+}
+
+/**
+ * Submit an answer to the current question (called by QuestionOverlay).
+ */
+export function answerQuestion(answer: string) {
+    const state = questionState()
+    if (state.resolve) {
+        state.resolve(answer)
+    }
+    setQuestionState({ active: false, prompt: '', options: [], resolve: null })
+}
+
+/**
+ * Skip the current question (Escape). Resolves with a skip marker.
+ */
+export function skipQuestion() {
+    answerQuestion('[用户跳过了这个问题]')
+}
 
 export function addPlayerMessage(content: string) {
     setMessages([...messages, { $k: 'player', content }])
@@ -308,11 +353,13 @@ export function getStatusText(): string {
             if (s.tps > 0) parts.push(`TPS ${s.tps.toFixed(1)}`)
             return parts.join('  ')
         }
+        case 'asking': return '模拟器正在提问，等待回答'
         case 'status-bar': return '正在更新状态栏'
         case 'compressing': return '正在压缩记忆'
         case 'error-main': return '主要内容生成失败'
         case 'error-status-bar': return '状态栏更新遇到错误'
         case 'error-compress': return '记忆压缩遇到错误'
+        default: return ''
     }
 }
 

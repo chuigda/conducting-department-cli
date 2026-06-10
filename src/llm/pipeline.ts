@@ -2,7 +2,10 @@
  * Pipeline orchestration — the core send flow.
  *
  * 1. User sends instruction
- * 2. Stream simulator response
+ * 2. Stream simulator response (with tool call loop)
+ *    - If LLM issues tool_calls (ask_question), show question UI
+ *    - Collect answer, append tool result, re-request
+ *    - Repeat until LLM produces final content without tool_calls
  * 3. Update status bar (non-streaming)
  * 4. Compress memory if needed (non-streaming)
  * 5. Push final SimulatorMessage to store
@@ -10,7 +13,8 @@
 
 import type { AppConfig } from '../config'
 import { resolveApi } from '../config'
-import type { SimulatorMessage, Message } from '../chat_message'
+import type { SimulatorMessage, Message, ToolInteraction } from '../chat_message'
+import type { ChatMessage, ToolCall, ToolDefinition } from './client'
 import { streamCompletion, completion } from './client'
 import {
     buildSimulationRequest,
@@ -19,7 +23,34 @@ import {
     splitSimulatorOutput,
 } from './context'
 import { computePreciseMemoryInUse } from './prompt_builder'
-import { getActiveAddons } from '../store'
+import { getActiveAddons, showQuestion } from '../store'
+
+// ── Tool definitions ──
+
+const ASK_QUESTION_TOOL: ToolDefinition = {
+    type: 'function',
+    function: {
+        name: 'ask_question',
+        description: 'Ask the Conducting Department (user) a question for clarification before generating story content.',
+        parameters: {
+            type: 'object',
+            properties: {
+                prompt: {
+                    type: 'string',
+                    description: 'The question to ask the user.',
+                },
+                options: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional list of suggested answers for the user to choose from.',
+                },
+            },
+            required: ['prompt'],
+        },
+    },
+}
+
+const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL]
 
 export interface PipelineCallbacks {
     onStreamingDelta: (accumulated: string) => void
@@ -42,13 +73,16 @@ export async function executePipeline(
     callbacks: PipelineCallbacks,
     signal?: AbortSignal
 ): Promise<PipelineResult | null> {
-    // ── Stage 1: Simulator streaming ──
+    // ── Stage 1: Simulator streaming with tool call loop ──
     callbacks.onWorkStatus({ $k: 'waiting' })
 
     // Use active addons (respecting enable/disable and order)
     const effectiveConfig: AppConfig = { ...config, additionalCHRs: getActiveAddons() }
 
     const simRequest = buildSimulationRequest(effectiveConfig, messages, userInstruction)
+    // Attach tools to the request
+    simRequest.tools = TOOLS
+
     const simApi = resolveApi(config, 'chat')
 
     let accumulated = ''
@@ -56,29 +90,95 @@ export async function executePipeline(
     let firstTokenTime = 0
     let chunkCount = 0
 
-    let simResult: { content: string; promptTokens: number; completionTokens: number }
-    try {
-        simResult = await streamCompletion(simApi, simRequest, {
-            onDelta(delta) {
-                chunkCount++
-                if (chunkCount === 1) firstTokenTime = Date.now()
-                accumulated += delta
-                callbacks.onStreamingDelta(accumulated)
+    // Track tool interactions for the final message
+    const toolInteractions: ToolInteraction[] = []
 
-                const ttft = firstTokenTime ? firstTokenTime - streamStart : 0
-                const elapsed = (Date.now() - firstTokenTime) / 1000
-                const tps = elapsed > 0 ? (chunkCount - 1) / elapsed : 0
-                callbacks.onWorkStatus({ $k: 'streaming', chars: accumulated.length, ttft, tps })
+    // Multi-turn messages for tool call loop (starts with the original request messages)
+    let turnMessages: ChatMessage[] = [...simRequest.messages]
+
+    let simResult: { content: string; toolCalls: ToolCall[]; promptTokens: number; completionTokens: number }
+    let totalPromptTokens = 0
+    let totalCompletionTokens = 0
+
+    // Tool call loop
+    const MAX_TOOL_ROUNDS = 10
+    for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+        try {
+            const request = { ...simRequest, messages: turnMessages }
+            simResult = await streamCompletion(simApi, request, {
+                onDelta(delta) {
+                    chunkCount++
+                    if (chunkCount === 1) firstTokenTime = Date.now()
+                    accumulated += delta
+                    callbacks.onStreamingDelta(accumulated)
+
+                    const ttft = firstTokenTime ? firstTokenTime - streamStart : 0
+                    const elapsed = (Date.now() - firstTokenTime) / 1000
+                    const tps = elapsed > 0 ? (chunkCount - 1) / elapsed : 0
+                    callbacks.onWorkStatus({ $k: 'streaming', chars: accumulated.length, ttft, tps })
+                }
+            }, signal)
+        } catch (err) {
+            if ((err as Error).name === 'AbortError') throw err
+            callbacks.onError('main', err as Error)
+            callbacks.onWorkStatus({ $k: 'error-main' })
+            return null
+        }
+
+        totalPromptTokens += simResult.promptTokens
+        totalCompletionTokens += simResult.completionTokens
+
+        // If no tool calls, we're done
+        if (simResult.toolCalls.length === 0) break
+
+        // Process tool calls sequentially
+        callbacks.onWorkStatus({ $k: 'asking' })
+
+        // Append assistant message with tool_calls to turn history
+        turnMessages = [...turnMessages, {
+            role: 'assistant',
+            content: simResult.content || null,
+            tool_calls: simResult.toolCalls,
+        }]
+
+        for (const toolCall of simResult.toolCalls) {
+            if (toolCall.function.name === 'ask_question') {
+                let args: { prompt: string; options?: string[] }
+                try {
+                    args = JSON.parse(toolCall.function.arguments)
+                } catch {
+                    args = { prompt: toolCall.function.arguments }
+                }
+
+                const options = args.options ?? []
+                const answer = await showQuestion(args.prompt, options)
+
+                toolInteractions.push({ prompt: args.prompt, options, answer })
+
+                // Append tool result message
+                turnMessages = [...turnMessages, {
+                    role: 'tool',
+                    content: answer,
+                    tool_call_id: toolCall.id,
+                }]
+            } else {
+                // Unknown tool — return error
+                turnMessages = [...turnMessages, {
+                    role: 'tool',
+                    content: `Error: unknown tool "${toolCall.function.name}"`,
+                    tool_call_id: toolCall.id,
+                }]
             }
-        }, signal)
-    } catch (err) {
-        if ((err as Error).name === 'AbortError') throw err
-        callbacks.onError('main', err as Error)
-        callbacks.onWorkStatus({ $k: 'error-main' })
-        return null
+        }
+
+        // Reset streaming state for next round
+        accumulated = ''
+        chunkCount = 0
+        callbacks.onStreamingDelta('')
+        callbacks.onWorkStatus({ $k: 'waiting' })
     }
 
-    const { content: simulatorContent, summarize } = splitSimulatorOutput(simResult.content)
+    const { content: simulatorContent, summarize } = splitSimulatorOutput(simResult!.content)
 
     // ── Stage 2: Status bar update ──
     callbacks.onWorkStatus({ $k: 'status-bar' })
@@ -109,8 +209,9 @@ export async function executePipeline(
         statusBar,
         coarseMemory,
         activePreciseMemory: prevActivePrecise + (summarize ? 1 : 0),
-        promptTokens: simResult.promptTokens,
-        completionTokens: simResult.completionTokens,
+        promptTokens: totalPromptTokens,
+        completionTokens: totalCompletionTokens,
+        toolInteractions: toolInteractions.length > 0 ? toolInteractions : undefined,
     }
 
     // ── Stage 3: Memory compression (if needed) ──
