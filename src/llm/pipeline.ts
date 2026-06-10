@@ -39,7 +39,8 @@ export async function executePipeline(
     config: AppConfig,
     messages: Message[],
     userInstruction: string,
-    callbacks: PipelineCallbacks
+    callbacks: PipelineCallbacks,
+    signal?: AbortSignal
 ): Promise<PipelineResult | null> {
     // ── Stage 1: Simulator streaming ──
     callbacks.onWorkStatus({ $k: 'waiting' })
@@ -69,8 +70,9 @@ export async function executePipeline(
                 const tps = elapsed > 0 ? (chunkCount - 1) / elapsed : 0
                 callbacks.onWorkStatus({ $k: 'streaming', chars: accumulated.length, ttft, tps })
             }
-        })
+        }, signal)
     } catch (err) {
+        if ((err as Error).name === 'AbortError') throw err
         callbacks.onError('main', err as Error)
         callbacks.onWorkStatus({ $k: 'error-main' })
         return null
@@ -86,9 +88,10 @@ export async function executePipeline(
 
     let statusBar = (messages.findLast(m => m.$k === 'simulator') as SimulatorMessage | undefined)?.statusBar ?? ''
     try {
-        const statusResult = await completion(statusBarApi, statusBarRequest)
+        const statusResult = await completion(statusBarApi, statusBarRequest, signal)
         statusBar = statusResult.content
     } catch (err) {
+        if ((err as Error).name === 'AbortError') throw err
         callbacks.onError('status-bar', err as Error)
         callbacks.onWorkStatus({ $k: 'error-status-bar' })
         // Non-fatal: continue with previous status bar
@@ -122,10 +125,11 @@ export async function executePipeline(
         const memoryApi = resolveApi(config, 'memory')
 
         try {
-            const compressResult = await completion(memoryApi, compressRequest)
+            const compressResult = await completion(memoryApi, compressRequest, signal)
             simMsg.coarseMemory = compressResult.content
             simMsg.activePreciseMemory = Math.max(0, simMsg.activePreciseMemory - config.compressPerTime)
         } catch (err) {
+            if ((err as Error).name === 'AbortError') throw err
             callbacks.onError('compress', err as Error)
             callbacks.onWorkStatus({ $k: 'error-compress' })
             // Non-fatal: continue without compression

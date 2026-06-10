@@ -1,11 +1,12 @@
 import { render } from "@opentui/solid"
 import { resolve } from 'path'
+import { writeFileSync } from 'node:fs'
 import { App } from "./src/ui/App"
 import { parseCliArgs, loadConfig } from "./src/config"
 import type { AppConfig } from "./src/config"
-import { initStore, messages, addons } from "./src/store"
+import { initStore, messages, addons, initSessionContext, getSessionContext } from "./src/store"
 import { ensureTemplates } from "./src/llm/prompt_builder"
-import { loadSessionFile, saveSession } from "./src/session"
+import { loadSessionFile, buildSessionFile } from "./src/session"
 import type { AdditionalCHR } from "./src/llm/chr_file"
 import { parse as parseToml } from 'smol-toml'
 
@@ -115,41 +116,33 @@ async function main() {
         ? resolve(args.loadPath)
         : resolve(`session-${new Date().toISOString().replace(/[:.]/g, '-')}.json`)
 
+    // Initialize session context so /save and /discard can access it
+    initSessionContext({ savePath, simulatorPath, addonPaths })
+
     // ── Render UI ──
+    // Use onDestroy to save session synchronously before the process exits.
+    // OpenTUI's exitOnCtrlC triggers renderer.destroy() internally, so async
+    // signal handlers would race against process termination.
     render(() => <App />, {
         exitOnCtrlC: true,
         useMouse: true,
         screenMode: "alternate-screen",
-    })
-
-    // ── Auto-save on exit ──
-    // exitOnCtrlC calls renderer.destroy() which restores terminal state.
-    // Our signal handler saves the session file before exiting.
-    const doSave = async () => {
-        try {
-            await saveSession(savePath, {
-                config,
-                messages: messages.slice(),
-                addons: addons(),
-                simulatorPath,
-                addonPaths,
-            })
-        } catch (e) {
-            // Best effort — don't crash on save failure
-        }
-    }
-
-    process.on('SIGINT', async () => {
-        await doSave()
-        process.exit(0)
-    })
-    process.on('SIGTERM', async () => {
-        await doSave()
-        process.exit(0)
-    })
-    // Bun also fires 'beforeExit' before the event loop drains
-    process.on('beforeExit', async () => {
-        await doSave()
+        onDestroy: () => {
+            const ctx = getSessionContext()
+            if (!ctx || ctx.discarded) return
+            try {
+                const session = buildSessionFile({
+                    config,
+                    messages: messages.slice(),
+                    addons: addons(),
+                    simulatorPath: ctx.simulatorPath,
+                    addonPaths: ctx.addonPaths,
+                })
+                writeFileSync(ctx.savePath, JSON.stringify(session, null, 2))
+            } catch (_) {
+                // Best effort — don't crash on save failure
+            }
+        },
     })
 }
 

@@ -26,13 +26,15 @@ const mdStyle = SyntaxStyle.fromStyles({
 
 interface ChatBubbleProps {
     message: Message
+    reverseIndex?: number
 }
 
 export function ChatBubble(props: ChatBubbleProps) {
     const roleLabel = () => {
+        const idx = props.reverseIndex
         switch (props.message.$k) {
-            case 'simulator': return '模拟器'
-            case 'player': return '指挥部'
+            case 'simulator': return idx != null ? `模拟器 #${idx}` : '模拟器'
+            case 'player': return idx != null ? `指挥部 #${idx}` : '指挥部'
             case 'error': return '错误'
             case 'info': return '提示'
         }

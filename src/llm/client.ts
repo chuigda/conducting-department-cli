@@ -39,7 +39,8 @@ export interface CompletionResult {
 export async function streamCompletion(
     endpoint: ApiEndpoint,
     request: ChatCompletionRequest,
-    callbacks: StreamCallbacks
+    callbacks: StreamCallbacks,
+    signal?: AbortSignal
 ): Promise<CompletionResult> {
     const response = await fetch(endpoint.url, {
         method: 'POST',
@@ -48,6 +49,7 @@ export async function streamCompletion(
             'Authorization': `Bearer ${endpoint.key}`,
         },
         body: JSON.stringify({ ...request, stream: true }),
+        signal,
     })
 
     if (!response.ok) {
@@ -111,7 +113,8 @@ export async function streamCompletion(
  */
 export async function completion(
     endpoint: ApiEndpoint,
-    request: ChatCompletionRequest
+    request: ChatCompletionRequest,
+    signal?: AbortSignal
 ): Promise<CompletionResult> {
     const response = await fetch(endpoint.url, {
         method: 'POST',
@@ -120,6 +123,7 @@ export async function completion(
             'Authorization': `Bearer ${endpoint.key}`,
         },
         body: JSON.stringify({ ...request, stream: false }),
+        signal,
     })
 
     if (!response.ok) {

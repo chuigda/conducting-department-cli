@@ -1,9 +1,15 @@
 import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
+import { writeFileSync } from 'node:fs'
+import { resolve } from 'path'
 import type { Message, SimulatorMessage, WorkStatus } from './chat_message'
 import type { AppConfig } from './config'
 import type { AdditionalCHR } from './llm/chr_file'
+import { buildSessionFile } from './session'
 import { executePipeline } from './llm/pipeline'
+import { resolveApi } from './config'
+import { completion, buildRequest } from './llm/client'
+import { buildStatusBarUpdateRequest } from './llm/context'
 
 // ── Edit target types ──
 
@@ -25,6 +31,25 @@ export interface EditorState {
 export interface AddonEntry {
     chr: AdditionalCHR
     enabled: boolean
+}
+
+// ── Session context (set once at startup, mutated by /save as) ──
+
+export interface SessionContext {
+    savePath: string
+    simulatorPath: string
+    addonPaths: string[]
+    discarded: boolean
+}
+
+let sessionCtx: SessionContext | null = null
+
+export function initSessionContext(ctx: Omit<SessionContext, 'discarded'>) {
+    sessionCtx = { ...ctx, discarded: false }
+}
+
+export function getSessionContext(): SessionContext | null {
+    return sessionCtx
 }
 
 // ── App Config (set once at startup) ──
@@ -77,6 +102,8 @@ const [editorState, setEditorState] = createSignal<EditorState>({
 // ── Addon state ──
 const [addons, setAddons] = createSignal<AddonEntry[]>([])
 
+// ── Abort controller for cancelling generation ──
+let currentAbortController: AbortController | null = null
 export {
     messages, setMessages,
     streamingContent, setStreamingContent,
@@ -142,6 +169,16 @@ export function deleteMessage(index: number) {
 }
 
 /**
+ * Cancel the current generation (if any).
+ */
+export function cancelGeneration() {
+    if (currentAbortController) {
+        currentAbortController.abort()
+        currentAbortController = null
+    }
+}
+
+/**
  * The main send action. Orchestrates the full pipeline.
  */
 export async function sendInstruction(instruction: string) {
@@ -157,6 +194,10 @@ export async function sendInstruction(instruction: string) {
     setIsSending(true)
     setStreamingContent('')
     setInputText('')
+
+    // Create abort controller for this generation
+    currentAbortController = new AbortController()
+    const signal = currentAbortController.signal
 
     // Add the user message immediately
     addPlayerMessage(text)
@@ -174,20 +215,81 @@ export async function sendInstruction(instruction: string) {
                     setWorkStatus(status)
                 },
                 onError(stage, error) {
+                    // Don't show abort errors
+                    if (error.name === 'AbortError') return
                     addErrorMessage(`[${stage}] ${error.message}`)
                 },
-            }
+            },
+            signal
         )
 
         if (result) {
             addSimulatorMessage(result.simulatorMessage)
         }
+    } catch (err: any) {
+        if (err.name === 'AbortError') {
+            addInfoMessage('生成已取消')
+        } else {
+            throw err
+        }
     } finally {
+        currentAbortController = null
         setStreamingContent('')
         setIsSending(false)
         if (workStatus().$k !== 'error-main'
             && workStatus().$k !== 'error-status-bar'
             && workStatus().$k !== 'error-compress') {
+            setWorkStatus({ $k: 'idle' })
+        }
+    }
+}
+
+/**
+ * Re-generate the status bar using the latest simulator message.
+ */
+export async function regenStatusBar() {
+    if (!appConfig) return
+    if (isSending()) return
+
+    const lastSimIdx = messages.findLastIndex(m => m.$k === 'simulator')
+    if (lastSimIdx < 0) return
+
+    const lastSim = messages[lastSimIdx] as SimulatorMessage
+
+    // Find the player message just before this simulator message
+    let userInstruction = ''
+    for (let i = lastSimIdx - 1; i >= 0; i--) {
+        const msg = messages[i]
+        if (msg && msg.$k === 'player') {
+            userInstruction = msg.content
+            break
+        }
+    }
+
+    setIsSending(true)
+    currentAbortController = new AbortController()
+    const signal = currentAbortController.signal
+
+    setWorkStatus({ $k: 'status-bar' })
+
+    try {
+        const effectiveConfig: AppConfig = { ...appConfig, additionalCHRs: getActiveAddons() }
+        const statusBarRequest = buildStatusBarUpdateRequest(effectiveConfig, messages.slice(), userInstruction, lastSim.content)
+        const statusBarApi = resolveApi(appConfig, 'statusBar')
+
+        const statusResult = await completion(statusBarApi, statusBarRequest, signal)
+        setMessages(lastSimIdx, 'statusBar' as any, statusResult.content)
+    } catch (err: any) {
+        if (err.name === 'AbortError') {
+            addInfoMessage('状态栏生成已取消')
+        } else {
+            addErrorMessage(`[status-bar] ${(err as Error).message}`)
+            setWorkStatus({ $k: 'error-status-bar' })
+        }
+    } finally {
+        currentAbortController = null
+        setIsSending(false)
+        if (workStatus().$k !== 'error-status-bar') {
             setWorkStatus({ $k: 'idle' })
         }
     }
@@ -334,6 +436,14 @@ export function parseCommand(input: string): CommandResult {
             return wrapError(handleEditCommand(parts))
         case '/resend':
             return wrapError(handleResendCommand())
+        case '/status':
+            return handleStatusCommand(parts)
+        case '/del':
+            return handleDelCommand(parts)
+        case '/save':
+            return handleSaveCommand(parts)
+        case '/discard':
+            return handleDiscardCommand()
         case '/clear':
             clearErrors()
             return { $k: 'ok' }
@@ -417,6 +527,36 @@ function handleResendCommand(): string | null {
     return null
 }
 
+function handleStatusCommand(parts: string[]): CommandResult {
+    const action = parts[1]
+    if (action === 'regen') {
+        if (isSending()) return { $k: 'error', message: '正在生成中，无法重新生成状态栏' }
+        const hasSim = messages.some(m => m.$k === 'simulator')
+        if (!hasSim) return { $k: 'error', message: '没有模拟器消息，无法生成状态栏' }
+        regenStatusBar()
+        return { $k: 'ok' }
+    }
+    return { $k: 'error', message: '用法: /status regen' }
+}
+
+function handleDelCommand(parts: string[]): CommandResult {
+    const nStr = parts[1]
+    if (!nStr) return { $k: 'error', message: '用法: /del <N> (N=倒序索引, 0=最新)' }
+
+    const n = parseInt(nStr, 10)
+    if (isNaN(n) || n < 0) return { $k: 'error', message: 'N 必须为非负整数' }
+
+    const editable = getEditableMessages()
+    const reverseIdx = editable.length - 1 - n
+    if (reverseIdx < 0) {
+        return { $k: 'error', message: `消息 #${n} 不存在 (共 ${editable.length} 条消息, 0=最新)` }
+    }
+
+    const { realIndex } = editable[reverseIdx]!
+    deleteMessage(realIndex)
+    return { $k: 'info', message: `已删除消息 #${n}` }
+}
+
 function handleAddonCommand(parts: string[]): CommandResult {
     const action = parts[1]
 
@@ -493,6 +633,47 @@ function handleAddonCommand(parts: string[]): CommandResult {
 }
 
 /**
+ * /save — save session to current path
+ * /save as <filename> — update path, then save
+ */
+function handleSaveCommand(parts: string[]): CommandResult {
+    if (!sessionCtx || !appConfig) return { $k: 'error', message: '会话上下文未初始化' }
+
+    // /save as <filename>
+    if (parts[1] === 'as') {
+        const filename = parts.slice(2).join(' ').trim()
+        if (!filename) return { $k: 'error', message: '用法: /save as <filename>' }
+        sessionCtx.savePath = resolve(filename)
+    } else if (parts[1]) {
+        return { $k: 'error', message: '用法: /save 或 /save as <filename>' }
+    }
+
+    try {
+        const session = buildSessionFile({
+            config: appConfig,
+            messages: messages.slice(),
+            addons: addons(),
+            simulatorPath: sessionCtx.simulatorPath,
+            addonPaths: sessionCtx.addonPaths,
+        })
+        writeFileSync(sessionCtx.savePath, JSON.stringify(session, null, 2))
+        return { $k: 'info', message: `已保存到 ${sessionCtx.savePath}` }
+    } catch (e: any) {
+        return { $k: 'error', message: `保存失败: ${e?.message ?? e}` }
+    }
+}
+
+/**
+ * /discard — quit without saving
+ */
+function handleDiscardCommand(): CommandResult {
+    if (!sessionCtx) return { $k: 'error', message: '会话上下文未初始化' }
+    sessionCtx.discarded = true
+    // Exit the process; onDestroy will check discarded flag and skip save
+    process.exit(0)
+}
+
+/**
  * Get the currently active (enabled) additional CHRs in order.
  */
 export function getActiveAddons(): AdditionalCHR[] {
@@ -505,6 +686,11 @@ export const HELP_TEXT = `可用命令:
   /edit status      编辑状态栏
   /edit coarse      编辑总结记忆
   /resend           重发上一条用户消息，重新生成
+  /status regen     重新生成状态栏
+  /del <N>          删除消息 (N=倒序索引, 0=最新)
+  /save             保存会话
+  /save as <file>   另存为指定文件，后续自动保存到该文件
+  /discard          放弃保存并退出
   /addon            列出所有附加模块
   /addon enable <id>    启用附加模块
   /addon disable <id>   禁用附加模块

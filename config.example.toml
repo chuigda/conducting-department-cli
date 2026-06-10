@@ -1,0 +1,21 @@
+[api]
+url = "https://your-api-endpoint/v1/chat/completions"
+key = "sk-your-api-key-here"
+
+[chat]
+model = "claude-opus-4-6"
+temperature = 0.5
+
+[statusBar]
+model = "gemini-3-flash-preview"
+temperature = 0.05
+
+[memory]
+model = "gemini-3-flash-preview"
+temperature = 0.05
+
+[pipeline]
+outputBudget = 1512
+inlineMessageLimit = 5
+preciseMemoryLimit = 20
+compressPerTime = 5

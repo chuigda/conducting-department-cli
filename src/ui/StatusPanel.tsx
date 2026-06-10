@@ -34,44 +34,48 @@ export function StatusPanel() {
     return (
         <box flexDirection="column" width="100%" height="100%">
             {/* Status Bar Section */}
-            <box flexDirection="column" backgroundColor={panelBg} paddingX={1} paddingY={1}>
-                <text content="状态栏" fg={fg} attributes={TextAttributes.BOLD} />
+            <box flexDirection="column" flexShrink={0} maxHeight="40%" backgroundColor={panelBg} paddingX={1} paddingY={1}>
+                <text flexShrink={0} content="状态栏" fg={fg} attributes={TextAttributes.BOLD} />
                 <Show when={latestStatusBar()} fallback={<text content="暂无状态" fg={dimmed} />}>
-                    <markdown
-                        content={latestStatusBar()}
-                        syntaxStyle={mdStyle}
-                        fg={fg}
-                        bg={panelBg}
-                        width="100%"
-                    />
+                    <scrollbox flexGrow={1} scrollY>
+                        <markdown
+                            content={latestStatusBar()}
+                            syntaxStyle={mdStyle}
+                            fg={fg}
+                            bg={panelBg}
+                            width="100%"
+                        />
+                    </scrollbox>
                 </Show>
             </box>
 
             {/* Coarse Memory Section */}
-            <box flexDirection="column" backgroundColor={panelBg} paddingX={1} paddingY={1} marginTop={1}>
-                <text content="总结记忆" fg={fg} attributes={TextAttributes.BOLD} />
+            <box flexDirection="column" flexShrink={0} maxHeight="30%" backgroundColor={panelBg} paddingX={1} paddingY={1} marginTop={1}>
+                <text flexShrink={0} content="总结记忆" fg={fg} attributes={TextAttributes.BOLD} />
                 <Show when={getCoarseMemory()} fallback={<text content="暂无总结" fg={dimmed} />}>
-                    <text wrapMode="word" fg={fg} content={getCoarseMemory()} />
+                    <scrollbox flexGrow={1} scrollY stickyScroll stickyStart="bottom">
+                        <text wrapMode="word" width="100%" fg={fg} content={getCoarseMemory()} />
+                    </scrollbox>
                 </Show>
             </box>
 
             {/* Precise Memory Section */}
             <box flexDirection="column" backgroundColor={panelBg} paddingX={1} paddingY={1} marginTop={1} flexGrow={1}>
-                <text content={`精细记忆 (${entries().length})`} fg={fg} attributes={TextAttributes.BOLD} />
+                <text flexShrink={0} content={`精细记忆 (${entries().length})`} fg={fg} attributes={TextAttributes.BOLD} />
                 <Show when={entries().length > 0} fallback={<text content="暂无条目" fg={dimmed} />}>
                     <scrollbox flexGrow={1} scrollY stickyScroll stickyStart="bottom">
                         <box flexDirection="column" gap={1} width="100%">
                             <Show when={inactiveEntries().length > 0}>
                                 <text fg={dimmed} content={`--- 非活动 (${inactiveEntries().length}) ---`} />
                                 <For each={inactiveEntries()}>
-                                    {(entry) => <text wrapMode="word" fg={dimmed} content={entry.text} />}
+                                    {(entry) => <text wrapMode="word" width="100%" fg={dimmed} content={entry.text} />}
                                 </For>
                             </Show>
 
                             <Show when={activeEntries().length > 0}>
                                 <text fg={fg} content={`--- 活动 (${activeEntries().length}) ---`} />
                                 <For each={activeEntries()}>
-                                    {(entry) => <text wrapMode="word" fg={fg} content={entry.text} />}
+                                    {(entry) => <text wrapMode="word" width="100%" fg={fg} content={entry.text} />}
                                 </For>
                             </Show>
                         </box>

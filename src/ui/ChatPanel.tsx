@@ -1,5 +1,5 @@
 import { TextAttributes, SyntaxStyle, RGBA, type KeyEvent, type TextareaRenderable } from '@opentui/core'
-import { For, Show } from 'solid-js'
+import { createSignal, For, Show } from 'solid-js'
 import { ChatBubble } from './ChatBubble'
 import {
     messages,
@@ -13,6 +13,7 @@ import {
     addErrorMessage,
     addInfoMessage,
     clearErrors,
+    cancelGeneration,
 } from '../store'
 
 const dimmed = '#888888'
@@ -36,6 +37,8 @@ const mdStyle = SyntaxStyle.fromStyles({
 
 export function ChatPanel() {
     let textareaRef: TextareaRenderable | undefined
+    let cancelTimer: ReturnType<typeof setTimeout> | null = null
+    const [showCancelHint, setShowCancelHint] = createSignal(false)
 
     const statusColor = () => {
         const s = workStatus()
@@ -71,6 +74,23 @@ export function ChatPanel() {
     }
 
     function handleKeyDown(event: KeyEvent) {
+        if (event.name === 'escape' && !event.ctrl && !event.shift && !event.meta) {
+            if (!isSending()) return
+            if (showCancelHint()) {
+                // Second escape — cancel generation
+                if (cancelTimer) { clearTimeout(cancelTimer); cancelTimer = null }
+                setShowCancelHint(false)
+                cancelGeneration()
+            } else {
+                // First escape — show hint for 5 seconds
+                setShowCancelHint(true)
+                cancelTimer = setTimeout(() => {
+                    setShowCancelHint(false)
+                    cancelTimer = null
+                }, 5000)
+            }
+            return
+        }
         if (event.name === 'return' && !event.ctrl && !event.shift && !event.meta) {
             handleSubmit()
         }
@@ -81,7 +101,6 @@ export function ChatPanel() {
             {/* Message list */}
             <scrollbox
                 flexGrow={1}
-                flexDirection="column"
                 stickyScroll
                 stickyStart="bottom"
                 scrollY
@@ -92,7 +111,16 @@ export function ChatPanel() {
                     </Show>
 
                     <For each={messages}>
-                        {(msg) => <ChatBubble message={msg} />}
+                        {(msg, i) => {
+                            const reverseIndex = () => {
+                                if (msg.$k === 'error' || msg.$k === 'info') return undefined
+                                // Count non-error/info messages, compute reverse index
+                                const editableCount = messages.filter(m => m.$k !== 'error' && m.$k !== 'info').length
+                                const positionAmongEditable = messages.slice(0, i() + 1).filter(m => m.$k !== 'error' && m.$k !== 'info').length - 1
+                                return editableCount - 1 - positionAmongEditable
+                            }
+                            return <ChatBubble message={msg} reverseIndex={reverseIndex()} />
+                        }}
                     </For>
 
                     {/* Streaming bubble */}
@@ -119,7 +147,7 @@ export function ChatPanel() {
             </scrollbox>
 
             {/* Input area */}
-            <box flexDirection="column" marginTop={1} backgroundColor={bubbleBg} padding={1}>
+            <box flexDirection="column" flexShrink={0} marginTop={1} backgroundColor={bubbleBg} padding={1}>
                 <textarea
                     ref={textareaRef}
                     height={5}
@@ -140,8 +168,12 @@ export function ChatPanel() {
             </box>
 
             {/* Status bar */}
-            <box marginTop={1}>
-                <text fg={statusColor()} content={getStatusText()} />
+            <box flexShrink={0} marginTop={1}>
+                <Show when={showCancelHint()} fallback={
+                    <text fg={statusColor()} content={getStatusText()} />
+                }>
+                    <text fg="#cc6600" content={`${getStatusText()} (再按一次 ESC 取消生成)`} />
+                </Show>
             </box>
         </box>
     )
