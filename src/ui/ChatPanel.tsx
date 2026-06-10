@@ -166,13 +166,10 @@ export function ChatPanel() {
                                 {(line) => <text fg={dimmed} content={line} />}
                             </For>
                             <Show when={streamingContent()}>
-                                <markdown
-                                    content={streamingContent()}
-                                    syntaxStyle={mdStyle}
+                                <text
+                                    wrapMode="word"
                                     fg="#000000"
-                                    bg={bubbleBg}
-                                    streaming={true}
-                                    width="100%"
+                                    content={streamingContent()}
                                 />
                             </Show>
                         </box>
