@@ -30,6 +30,7 @@ export interface EditorState {
 
 export interface AddonEntry {
     chr: AdditionalCHR
+    path: string
     enabled: boolean
 }
 
@@ -38,7 +39,6 @@ export interface AddonEntry {
 export interface SessionContext {
     savePath: string
     simulatorPath: string
-    addonPaths: string[]
     discarded: boolean
 }
 
@@ -46,6 +46,10 @@ let sessionCtx: SessionContext | null = null
 
 export function initSessionContext(ctx: Omit<SessionContext, 'discarded'>) {
     sessionCtx = { ...ctx, discarded: false }
+}
+
+export function getSimulatorPath(): string | null {
+    return sessionCtx?.simulatorPath ?? null
 }
 
 export function getSessionContext(): SessionContext | null {
@@ -58,8 +62,8 @@ let appConfig: AppConfig | null = null
 export function initStore(config: AppConfig) {
     appConfig = config
 
-    // Initialize addons from config
-    setAddons(config.additionalCHRs.map(chr => ({ chr, enabled: true })))
+    // Initialize addons from config (paths will be patched by caller)
+    setAddons(config.additionalCHRs.map(chr => ({ chr, path: '', enabled: true })))
 
     // If the simulator CHR has a prologue, seed it as the first message
     if (config.simulatorCHR.prologue) {
@@ -712,7 +716,6 @@ function handleSaveCommand(parts: string[]): CommandResult {
             messages: messages.slice(),
             addons: addons(),
             simulatorPath: sessionCtx.simulatorPath,
-            addonPaths: sessionCtx.addonPaths,
         })
         writeFileSync(sessionCtx.savePath, JSON.stringify(session, null, 2))
         return { $k: 'info', message: `已保存到 ${sessionCtx.savePath}` }

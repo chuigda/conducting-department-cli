@@ -49,23 +49,13 @@ export interface SaveInput {
     messages: Message[]
     addons: AddonEntry[]
     simulatorPath: string
-    addonPaths: string[]
 }
 
 export function buildSessionFile(input: SaveInput): SessionFile {
     const absSimulatorPath = resolve(input.simulatorPath)
 
-    // Build addon list: match AddonEntry order, resolve paths
-    // addonPaths is the original CLI order; we need to map by id
-    const pathById = new Map<string, string>()
-    for (const p of input.addonPaths) {
-        const basename = p.replace(/\\/g, '/').split('/').pop() ?? p
-        const id = basename.replace(/\.chr\.toml$|\.toml$/, '')
-        pathById.set(id, resolve(p))
-    }
-
     const addons: SessionAddon[] = input.addons.map(entry => ({
-        path: pathById.get(entry.chr.id) ?? resolve(entry.chr.id),
+        path: entry.path,
         enabled: entry.enabled,
     }))
 

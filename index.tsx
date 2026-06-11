@@ -24,20 +24,19 @@ async function main() {
 
     let config: AppConfig
     let simulatorPath: string
-    let addonPaths: string[]
 
     if (args.loadPath) {
         // ── Load from session file ──
         const session = await loadSessionFile(args.loadPath)
 
         simulatorPath = session.simulatorPath
-        addonPaths = session.addons.map(a => a.path)
 
         // Load simulator CHR from saved path
         const simulatorCHR = await readTomlFile(session.simulatorPath) as unknown as import('./src/llm/chr_file').SimulatorCHR
 
         // Load addon CHRs from saved paths
         const additionalCHRs: AdditionalCHR[] = []
+        const addonPathList: string[] = []
         for (const addon of session.addons) {
             const chr = await readTomlFile(addon.path) as unknown as AdditionalCHR
             if (!chr.id) {
@@ -45,6 +44,7 @@ async function main() {
                 chr.id = basename.replace(/\.chr\.toml$|\.toml$/, '')
             }
             additionalCHRs.push(chr)
+            addonPathList.push(addon.path)
         }
 
         // Reconstruct AppConfig from session
@@ -82,7 +82,7 @@ async function main() {
                 chr.id = basename.replace(/\.chr\.toml$|\.toml$/, '')
             }
             config.additionalCHRs.push(chr)
-            addonPaths.push(resolve(path))
+            addonPathList.push(path)
         }
 
         // Load prompt templates
@@ -98,17 +98,25 @@ async function main() {
         // Restore addon enabled state (match by index since order is preserved)
         setAddons(config.additionalCHRs.map((chr, i) => ({
             chr,
+            path: addonPathList[i] ?? '',
             enabled: session.addons[i]?.enabled ?? true,
         })))
 
     } else {
         // ── Normal startup ──
         simulatorPath = args.simulatorPath
-        addonPaths = args.addonPaths
 
         config = await loadConfig(args)
         await ensureTemplates()
         initStore(config)
+
+        // Patch addons with paths from CLI args
+        const { setAddons } = await import('./src/store')
+        setAddons(config.additionalCHRs.map((chr, i) => ({
+            chr,
+            path: args.addonPaths[i] ?? '',
+            enabled: true,
+        })))
     }
 
     // Determine save path
@@ -117,7 +125,7 @@ async function main() {
         : resolve(`session-${new Date().toISOString().replace(/[:.]/g, '-')}.json`)
 
     // Initialize session context so /save and /discard can access it
-    initSessionContext({ savePath, simulatorPath, addonPaths })
+    initSessionContext({ savePath, simulatorPath })
 
     // ── Render UI ──
     // Use onDestroy to save session synchronously before the process exits.
@@ -136,7 +144,6 @@ async function main() {
                     messages: messages.slice(),
                     addons: addons(),
                     simulatorPath: ctx.simulatorPath,
-                    addonPaths: ctx.addonPaths,
                 })
                 writeFileSync(ctx.savePath, JSON.stringify(session, null, 2))
 
