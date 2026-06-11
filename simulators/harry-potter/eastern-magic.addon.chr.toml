@@ -1,0 +1,66 @@
+# type: addon
+#
+# This addon introduces the Eastern (Chinese) cultivation magic system as a parallel tradition
+# to Western wizardry in the Harry Potter universe. It covers the Yin-Yang Qi foundation,
+# core arts (Kotodama, Telekinesis, Qi Shield), auxiliary disciplines, the school system,
+# governance (S.S.S.C.), and the unique Two Realms Law.
+id = "eastern-magic"
+name = "东方修行体系"
+
+[simulator]
+world = """
+<addon id="eastern-magic">
+[Overview]
+Eastern magic (东方修行, "cultivation") is a complete magical tradition parallel to — but independent of — Western wizardry. Where Western wizards channel magic through wands and Latin incantations, Eastern cultivators (修行者) harness Yin-Yang Qi (阴阳二气), the primordial dual force underlying all existence. The two systems are equally valid; neither is superior.
+
+[Fundamental Principle: Yin-Yang Qi (阴阳二气)]
+All Eastern arts derive from a single source: the interplay of Yin (阴, passive/receptive/cold) and Yang (阳, active/projective/hot). A cultivator draws Qi from the environment (天地灵气) and refines it within their body through breathing exercises and meditation. The balance and volume of Qi a cultivator can store and circulate determines their power ceiling.
+
+Core arts are different applications of Yin-Yang Qi:
+- Kotodama (言灵): verbal incantations that shape Qi into effects. The spoken word acts as a focusing mechanism, analogous to Western wand-waving + incantation. Classical Chinese or poetic verses are most effective. Silent casting is possible but difficult.
+- Telekinetic Qi Manipulation (以气御物): projecting Qi outward to move, strike, or control objects and elements at range. Includes sword-riding (御剑飞行) at advanced levels.
+- Qi Shield (真气护体): circulating Qi as a protective barrier around the body. Can deflect physical blows and weaker spells. Strength scales with cultivation level.
+
+[Auxiliary Disciplines]
+- Sanda Techniques (散打技巧): martial arts combat integrated with Qi reinforcement. Cultivators are expected to be competent in close-quarters combat, unlike most Western wizards.
+- Six Arts of a Gentleman (君子六艺): Rites (礼), Music (乐), Archery (射), Charioteering (御), Calligraphy (书), Mathematics (数).
+
+[School System: Two-Stage Education]
+Eastern cultivators follow the classical "eight enter Primary, fifteen enter College" (古人八岁入小学，十五岁入大学) system:
+- Primary School (小学, ages 8–14): Foundational training. Curriculum includes basic Qi sensing, breathing techniques, elementary Kotodama, physical conditioning (Sanda fundamentals), and the Six Arts. Literacy in classical Chinese is taught as the language of cultivation texts.
+- College (大学, ages 15+): Advanced cultivation. Students may specialize in combat arts, alchemy (丹道), talisman-craft (符箓), formation arrays (阵法), or scholarly research. College education has no fixed end date — some cultivators study for decades.
+
+Multiple College level schools exist across China, all disguised as mundane tourist attractions or historical sites. Here are several famous ones: Hanlin Academy (翰林院, Beijing, Chang'an and Luoyang), Yuelu Academy (岳麓书院, Changsha), Mount Kunlun (昆仑山, Xinjiang), Mount Wudang (武当山, Hubei), Shaolin Temple (少林寺, Henan). Muggles visiting these sites see only historical ruins, temples, and scenic trails. The cultivator facilities exist in overlaid spatial folds (空间折叠) — similar in principle to Platform 9¾ or the Leaky Cauldron's entrance.
+
+Key principle: cultivation training is ELECTIVE at every stage. The only mandatory course is Ethics and Law of Cultivation (修行的道德与法制, i.e. 修行伦理学) — covering the Two Realms Law, prohibited arts, and moral responsibilities of power. All other cultivation coursework is opt-in. A student who values mundane life over cultivation may end their training early at any point. Many people with latent Qi talent complete only the ethics course and live entirely as ordinary citizens.
+
+Power Scaling: A Primary School graduate (age 14, six years of part-time cultivation) is roughly equivalent to a Hogwarts third-year student in overall magical capability. The lag reflects the split curriculum — Eastern students divide their time between cultivation and compulsory mundane education, whereas Hogwarts students study magic full-time.
+
+[Governance: S.S.S.C.]
+The Spellcasters' Supreme Soviet of China (S.S.S.C., 中华施法者最高苏维埃) is the governing body for all cultivators in China.
+- Founded in the 1930s in Ruijin (瑞金), modeled after the Soviet system.
+- Post-1950, evolved into a hybrid between a People's Congress and a Western parliament, but retains its original name for historical continuity.
+- Functions: cultivator registration, regulation of dangerous arts, enforcement of the Two Realms Law, international liaison with the International Confederation of Wizards.
+- Maintains a network of local offices (基层苏维埃) in major cities.
+
+[The Two Realms Law (两界法) & Relationship with the Statute of Secrecy]
+Unlike Western wizards, Eastern cultivators were never hidden from mundane society. Since pre-Qin times, cultivators held respected positions — as advisors, physicians, scholars, and generals. Since there's no systematic persecution, there's no separation at all.
+
+In 1689, when British wizards delivered the International Statute of Secrecy to the Qing court, Emperor Kangxi (康熙帝) reportedly responded: "The laws of barbarians have no bearing on the Celestial Empire" (蛮夷之法与我天朝上国何干？). China never signed the Statute.
+
+Post-1950, the S.S.S.C. enacted the Two Realms Law (两界法) — a product of pragmatic negotiation between the S.S.S.C. and the CCP, building on ties that dated back to the 1930s when both organizations were founded in Ruijin. The Party required a materialist national narrative and the political rhetoric of "smashing monsters and demons" (打倒牛鬼蛇神); cultivators, in turn, needed institutional protection from being swept up in ideological campaigns. The Two Realms Law was the compromise — a piece of Chinese political wisdom: cultivators agree to stay discreet, and the state acknowledges their existence and rights through a parallel legal framework invisible to the general public.
+- The world is divided into the Cultivation Realm (修行界) and the Mundane Realm (凡俗界).
+- Cultivators must not "manifest divinity before mortals" (不得随意显圣)
+- However, cultivators MAY live freely in mundane society. Most do. A typical cultivator holds a normal job, pays taxes, and practices cultivation privately.
+- Cultivator children receive BOTH cultivation education AND standard compulsory/higher education.
+- It is common for a cultivator to hold a university degree alongside their cultivation credentials.
+- A cultivator healing someone with Qi in a private clinic is acceptable; flying on a sword over city is not.
+
+[Interaction with Western Magic]
+The cultivation world's foreign policy closely mirrors that of the mundane Chinese government. Since the 17th century, contact between Eastern cultivators and Western wizards has been minimal:
+- Qing dynasty: isolationist policy (闭关锁国) applied equally to the cultivation world. Kangxi's rejection of the Statute of Secrecy set the tone.
+- 1840s–1949: a century of war and upheaval severed most remaining ties.
+- Post-1949: the S.S.S.C. aligned with the new government's Cold War stance, severing ties with the Blue Camp (蓝营) — the broader Western/capitalist/liberal bloc — mirroring the mundane Sino-Soviet split in reverse by maintaining only limited contact with socialist-aligned magical communities.
+- 1980s onward (Reform and Opening, 改革开放): diplomatic thaw. The S.S.S.C. gradually re-established contact with the International Confederation of Wizards. Exchange programs, trade in magical materials, and academic conferences resumed — but remain limited compared to intra-Western wizard relations.
+</addon>
+"""
