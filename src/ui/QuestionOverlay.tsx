@@ -1,4 +1,4 @@
-import { TextAttributes, type KeyEvent } from '@opentui/core'
+import { TextAttributes, type KeyEvent, type TextareaRenderable } from '@opentui/core'
 import { createSignal, Show, For } from 'solid-js'
 import { useKeyboard } from '@opentui/solid'
 import {
@@ -16,6 +16,7 @@ const optionFg = '#000000'
 const inputBg = '#ffffff'
 
 export function QuestionOverlay() {
+    let textareaRef: TextareaRenderable | undefined
     const [selectedIndex, setSelectedIndex] = createSignal(0)
     const [freeInput, setFreeInput] = createSignal('')
     const [mode, setMode] = createSignal<'select' | 'input'>(
@@ -50,17 +51,12 @@ export function QuestionOverlay() {
                 if (answer) answerQuestion(answer)
             }
         } else {
-            // Input mode: Ctrl+Enter or Ctrl+S to submit, Enter to newline
+            // Input mode: Ctrl+Enter or Ctrl+S to submit
             if ((key.name === 'return' && key.ctrl) || (key.name === 's' && key.ctrl)) {
-                if (freeInput().trim()) {
-                    answerQuestion(freeInput().trim())
+                const text = (textareaRef?.plainText ?? freeInput()).trim()
+                if (text) {
+                    answerQuestion(text)
                 }
-            } else if (key.name === 'return' && !key.ctrl) {
-                setFreeInput(s => s + '\n')
-            } else if (key.name === 'backspace') {
-                setFreeInput(s => s.slice(0, -1))
-            } else if (key.sequence && !key.ctrl && !key.meta && key.sequence.length === 1) {
-                setFreeInput(s => s + key.sequence)
             }
         }
     })
@@ -116,17 +112,19 @@ export function QuestionOverlay() {
                     content={state().options.length > 0 ? "自由输入 (Tab 切换):" : "输入回答:"}
                     marginBottom={0}
                 />
-                <box
+                <textarea
+                    ref={textareaRef}
+                    height={4}
                     width="100%"
+                    placeholder={mode() === 'input' ? "输入回答..." : ""}
                     backgroundColor={mode() === 'input' ? selectedOptionBg : inputBg}
-                    paddingLeft={1}
-                    paddingRight={1}
-                >
-                    <text
-                        fg={optionFg}
-                        content={freeInput() || (mode() === 'input' ? '▍' : '')}
-                    />
-                </box>
+                    textColor={optionFg}
+                    focusedBackgroundColor={selectedOptionBg}
+                    focusedTextColor={optionFg}
+                    placeholderColor={hintFg}
+                    focused={mode() === 'input'}
+                    onContentChange={(val: any) => setFreeInput(typeof val === 'string' ? val : val.content ?? '')}
+                />
             </box>
 
             {/* Hints */}
