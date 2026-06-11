@@ -145,7 +145,7 @@ function executeGlob(pattern: string): { success: boolean; result: string } {
 /**
  * Extract the most important argument from a tool interaction for display purposes.
  */
-function extractKeyArgument(interaction: ToolInteraction): string {
+export function extractKeyArgument(interaction: ToolInteraction): string {
     switch (interaction.$k) {
         case 'ask_question': return interaction.prompt
         case 'read': return interaction.path

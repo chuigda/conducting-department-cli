@@ -84,7 +84,7 @@ function extractToolKeyArgument(ti: ToolInteraction): string {
     }
 }
 
-function extractToolKeyResult(ti: ToolInteraction): string {
+export function extractToolKeyResult(ti: ToolInteraction): string {
     switch (ti.$k) {
         case 'ask_question': return ti.answer
         case 'read': return ti.success ? ti.result : `Error: ${ti.result}`
