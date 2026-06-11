@@ -55,12 +55,6 @@ format = """
 
 ---
 
-## World
-
-- {<repeat separator="newline">- {public event, one bullet each}</repeat>}
-
----
-
 ## 联盟状态
 
 {alliance description, e.g. "远坂-Archer 组与 Saber 组暂时休战" or "无"}

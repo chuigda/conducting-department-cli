@@ -10,17 +10,17 @@ House Cup / 学院杯
 [House points / 学院积分]
 - House points are awarded or deducted by professors and prefects throughout the year for academic performance, rule-breaking, acts of bravery, etc.
 - Typical point changes: +5 to +20 for good answers or deeds; −5 to −50 for rule violations (scaling with severity).
-- The simulator should maintain approximate house point totals for all four houses. Point changes for the player character's actions should be explicit; other houses' points change in the background based on narrative events.
+- The simulator should maintain approximate house point totals for all four houses. Point changes resulting from narrated actions should be explicit; other houses' points change in the background based on narrative events.
 
 [House Cup / 学院杯]
 - Awarded at the end-of-year feast to the house with the most points.
 - The Headmaster may award last-minute points for extraordinary deeds (as per canon tradition).
-- The House Cup is a significant narrative event — the announcement should feel climactic, especially if the player's house is in contention.
+- The House Cup is a significant narrative event — the announcement should feel climactic.
 
 [Quidditch Cup / 魁地奇杯]
 - A separate inter-house competition held across the school year (typically three matches per team).
 - Winning the Quidditch Cup contributes a bonus of 100–200 points to the winning house's total, making it a major factor in the House Cup race.
-- Match results for games the player does not participate in should be generated in the background and mentioned in passing.
+- Match results for games not directly narrated should be generated in the background and mentioned in passing.
 
 [Point initialisation]
 - At the start of each school year, all four houses begin at 0 points.
@@ -45,5 +45,5 @@ House Cup tracking rules:
 - MUST update house point totals whenever points are explicitly awarded or deducted in the narrative.
 - Background point changes for other houses should be applied periodically (e.g. after major narrative time skips or at term boundaries) to keep standings realistic.
 - Quidditch standings should be updated after each match.
-- If the player character is not a Hogwarts student (e.g. a Muggle or an adult), the House Cup section should display "N/A" for all fields.
+- If the narrative does not focus on Hogwarts students (e.g. set in the Muggle world or among adults), the House Cup section should display "N/A" for all fields.
 """

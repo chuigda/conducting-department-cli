@@ -32,23 +32,20 @@ language = "zh_CN"
 format = """
 # 霍格沃茨 — 动态状态
 
-> 时间线: {year} | Phase: {phase, e.g. 开学/学期中/考试季/暑假} | Updated: {in-world timestamp YYYY-MM-dd, time}
-
----
-
-## World
-
-- {<repeat separator="newline">- {public event or background development, one bullet each}</repeat>}
+> 时间线: {YYYY-mm-dd weekday} {time period (凌晨/清晨/早上/上午/中午/午后/下午/傍晚/夜晚/深夜)} | Phase: {phase, e.g. 开学/学期中/考试季/暑假}
 
 ---
 
 ## 人物
 
 {<repeat separator="double newline">
-### {character name}
-- 状态：{正常/受伤/失踪/死亡/石化/昏迷/...} | 位置: {location}
+### {character name} | {gender} | {age}
+- 位置: {location} | 状态：{正常/受伤/失踪/死亡/石化/昏迷/...}
 - 身份: {identity, e.g. 格兰芬多四年级/魔药学教授/魔法部官员}
-- 目标: {current goal or motivation, one line}
+- 外表: {appearance, outfit, notable features}
+- 物品: {held items} 魔杖: {wand description, e.g. "冬青木，11吋，凤凰羽毛，柔韧" or "N/A" for non-wizards}
+- 性格: {personality traits, prefer three or four 4-character Chinese phrases}
+- 目标: {current goal or motivation, may use Markdown list if multiple}
 - 人际:
   * {<repeat separator="newline  * ">{target}: {relationship, key info}</repeat>}
 </repeat>}
@@ -68,7 +65,6 @@ rule = """
 - Relationships (人际) should include motivations and context, not just labels.
 - Other fields should stay concise — one line where possible.
 - Dead/eliminated characters: keep header, replace body with **(死亡/石化/etc.)** — <one-line cause>.
-- Update the timestamp after each conducting department instruction.
 """
 
 [simulator]
@@ -82,11 +78,6 @@ world = """
 - Non-canon magic skills are permitted, e.g. Sharingan(写轮眼), Word Spirit(言灵), Flying With a Sword(御剑飞行).
 - Muggle skills are permitted, e.g. driving, accounting, shooting.
 - Easter egg: "This is SO ABNORMAL"(这也太不正常了) — exclusive to Vernon Dursley.
-
-[Skill level & XP system]
-- Core/elective subjects: 10 levels. Lv1-7 map to Year 1-7 average proficiency (XP 0 = year start, XP 100 = year end). Lv8-10 are post-graduation; Lv10 XP100 is the theoretical human ceiling (Dumbledore/Grindelwald/Voldemort tier).
-- Advanced magic: no levels, XP only (0 = no knowledge, 100 = full mastery).
-- Special, non-canon, and muggle skills: usually binary (possessed or not) and no levels or XP. Can have exceptions if otherwise specified.
 
 [Currency]
 - Wizarding: Galleon(金加隆), Sickle(银西可), Knut(铜纳特). 1 Galleon = 17 Sickles; 1 Sickle = 29 Knuts.
