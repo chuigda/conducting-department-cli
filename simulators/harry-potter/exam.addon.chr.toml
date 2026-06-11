@@ -1,0 +1,49 @@
+# type: addon
+id = "exams"
+name = "烦人的考试"
+
+[simulator]
+world = """
+<addon id="exams">
+Exams and grading
+
+[Grading scale]
+Used for OWLs, NEWTs, WOMBATs, and end-of-year exams:
+- Passing grades: O (Outstanding / 杰出), E (Exceeds Expectations / 超出期望), A (Acceptable / 及格).
+- Failing grades: P (Poor / 差), D (Dreadful / 糟糕透顶), T (Troll / 巨怪).
+
+[End-of-year exams / 期末考试]
+- Held in June for Years 1–4 and Year 6.
+- Typically include a written theory paper and a practical examination for each subject.
+
+[OWLs — Ordinary Wizarding Levels / 普通巫术等级考试]
+- Taken at the end of Year 5 (around age 15–16).
+- Administered by the Wizarding Examinations Authority, NOT by Hogwarts professors. External examiners (such as Professor Marchbanks and Professor Tofty) arrive at the school to conduct the tests.
+- Each subject has two components: a written theory paper and a practical examination, usually scheduled on separate days across a two-week exam period in June.
+- OWL results determine which NEWT-level classes a student may continue in Year 6–7.
+- Each professor sets their own minimum OWL grade for NEWT admission (e.g., Professor Snape requires an 'O' in Potions, while Professor McGonagall accepts 'E' in Transfiguration).
+- Results are delivered by owl post during the summer holidays, typically in late July or August.
+- OWLs are a major narrative event — the simulator should depict the exam period with appropriate tension, revision sessions (study groups, Weasleys' Wizard Wheezes distractions, stress breakdowns), and the anxious wait for results over summer.
+- Students typically sit OWLs in all subjects they have been taking (usually around 9–12 subjects depending on elective choices from Year 3 onward).
+
+[NEWTs — Nastily Exhausting Wizarding Tests / 超级疲劳轰炸式巫术测试]
+- Taken at the end of Year 7 (around age 17–18). The highest standard of wizarding qualification; results are critical for career prospects.
+- Also administered by the Wizarding Examinations Authority with external examiners.
+- NEWT subjects are chosen based on OWL results and career aspirations.
+- Students typically take far fewer NEWTs than OWLs (usually 3–5 subjects), focusing on their strongest and most career-relevant areas.
+- NEWTs are considerably more difficult than OWLs — the coursework in Years 6–7 is significantly more advanced, involving complex nonverbal spellcasting, advanced theory, and independent research.
+- Certain careers have strict NEWT requirements:
+  * Aurors need at least five NEWTs with grades no lower than 'E' in subjects including DADA, Potions, Transfiguration, and Charms;
+  * Healers require NEWTs in Potions, Herbology, Transfiguration, Charms, and DADA.
+- The pressure of NEWTs should be reflected narratively — Year 7 students are often depicted as stressed, sleep-deprived, and fiercely competitive.
+
+[WOMBATs — Wizards' Ordinary Magic and Basic Aptitude Tests / 巫师普通魔法与基本能力测试]
+- A standardised wizarding aptitude test open to ALL — witches, wizards, AND Muggles.
+- Administered by the Ministry of Magic's Department of Magical Education.
+- Unlike OWLs and NEWTs, WOMBATs are not tied to Hogwarts coursework and can be taken independently.
+- WOMBATs test general magical knowledge, ethical reasoning, creature identification, and situational judgement rather than practical spellcasting. This is precisely why Muggles are eligible.
+- Three difficulty tiers: WOMBAT Grade 1 (basic), Grade 2 (intermediate), Grade 3 (advanced). Each grade is a separate exam that can be attempted independently.
+- WOMBATs are occasionally referenced in the Daily Prophet and are a point of pride for intellectually inclined characters.
+- Hermione-type characters may bring them up enthusiastically.
+</addon>
+"""

@@ -1,0 +1,49 @@
+# type: addon
+id = "house-cup"
+name = "学院杯"
+
+[simulator]
+world = """
+<addon id="house-cup">
+House Cup / 学院杯
+
+[House points / 学院积分]
+- House points are awarded or deducted by professors and prefects throughout the year for academic performance, rule-breaking, acts of bravery, etc.
+- Typical point changes: +5 to +20 for good answers or deeds; −5 to −50 for rule violations (scaling with severity).
+- The simulator should maintain approximate house point totals for all four houses. Point changes for the player character's actions should be explicit; other houses' points change in the background based on narrative events.
+
+[House Cup / 学院杯]
+- Awarded at the end-of-year feast to the house with the most points.
+- The Headmaster may award last-minute points for extraordinary deeds (as per canon tradition).
+- The House Cup is a significant narrative event — the announcement should feel climactic, especially if the player's house is in contention.
+
+[Quidditch Cup / 魁地奇杯]
+- A separate inter-house competition held across the school year (typically three matches per team).
+- Winning the Quidditch Cup contributes a bonus of 100–200 points to the winning house's total, making it a major factor in the House Cup race.
+- Match results for games the player does not participate in should be generated in the background and mentioned in passing.
+
+[Point initialisation]
+- At the start of each school year, all four houses begin at 0 points.
+- By Christmas, typical totals range from 150–350 per house. By year-end (before the feast), typical totals range from 350–600 per house.
+- The simulator should introduce natural variance — no two houses should have suspiciously similar scores.
+</addon>
+"""
+
+[statusBar]
+format = """
+
+---
+
+### 🏆 学院杯 🏆
+
+学院积分: 格兰芬多 {gryffindor_points} | 斯莱特林 {slytherin_points} | 拉文克劳 {ravenclaw_points} | 赫奇帕奇 {hufflepuff_points}
+
+魁地奇杯: {quidditch_standings, e.g. "格兰芬多 1胜0负 / 斯莱特林 1胜1负 / 拉文克劳 0胜1负 / 赫奇帕奇 0胜0负" or "赛季未开始"}
+"""
+rule = """
+House Cup tracking rules:
+- MUST update house point totals whenever points are explicitly awarded or deducted in the narrative.
+- Background point changes for other houses should be applied periodically (e.g. after major narrative time skips or at term boundaries) to keep standings realistic.
+- Quidditch standings should be updated after each match.
+- If the player character is not a Hogwarts student (e.g. a Muggle or an adult), the House Cup section should display "N/A" for all fields.
+"""

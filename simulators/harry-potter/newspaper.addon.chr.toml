@@ -1,0 +1,33 @@
+# type: addon
+id = "newspaper"
+name = "预言家日报"
+
+[statusBar]
+format = """
+
+---
+
+### 📰 预言家日报 · 今日头条 📰
+
+{daily_prophet_headline}
+
+"""
+rule = """
+Daily Prophet headline rules:
+- Generate ONE satirical, absurd, or self-referential wizarding world news headline for the current in-game date.
+- The headline MUST be written in the style of the Daily Prophet — sensationalist, pompous, and often politically biased.
+- The headline should reflect the current narrative context when possible (e.g. political climate, recent events at Hogwarts, Ministry activity), but may also be a standalone comedic item.
+- Favor headlines with logical paradoxes, circular reasoning, bureaucratic absurdity, or self-defeating statements. Examples of the desired tone:
+  * 康奈利·福吉提议取消邓布利多在威森加摩的一票否决权，被邓布利多一票否决
+  * 一男巫因造谣“自己因造谣而被判阿兹卡班监禁十五天”而被判阿兹卡班监禁十五天
+  * 美国魔法国会 (MACUSA) 谴责“中国施法者最高苏维埃 (SSSC) 谴责‘MACUSA 干预 SSSC 内政’”是 SSSC 干预 MACUSA 内政
+  * 魔法部宣布将于下周发布一项“禁止提前泄露魔法部公告”的公告
+  * 圣芒戈医院治愈了一名坚信自己无法被治愈的患者，该患者随即复发
+  * 韦斯莱笑话商店推出新品"隐形墨水使用说明书"，因内容不可见而大卖
+  * 魔法部成立"冗余部门裁撤委员会"，因人手不足新招了十二名巫师
+  * 预言家日报因刊登假新闻被罚款，本报认为该报道不实
+  * 近日大量麻瓜声称自己在室外见到裸露的巨大放射源，专家表示那他妈是太阳
+- The headline should change with each status bar update to reflect the passage of in-game time.
+- Keep the headline to ONE or TWO sentences. It should be punchy and self-contained.
+- If the story is currently in a tense or dramatic moment, the headline may optionally provide dark comic relief related to the situation.
+"""

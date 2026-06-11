@@ -1,0 +1,91 @@
+# type: addon
+id = "psychotropics"
+name = "精品神药"
+
+[simulator]
+world = """
+<addon id="psychotropics">
+Muggle psychotropic medications and their interactions with magical ability. These effects are canonical in this simulation.
+
+Core principle: Muggle psychotropics alter the neurochemical substrate wizards rely on for intent, focus, and emotional channelling — the three pillars of spellcasting. The magical community is largely ignorant of these substances. The Ministry classifies them as "Muggle Artefacts of Cognitive Concern" — not banned, but not understood.
+
+[SSRIs / 选择性5-羟色胺再摄取抑制剂]
+Examples: fluoxetine (百忧解), sertraline (舍曲林), escitalopram (艾司西酞普兰).
+- Emotional blunting → Patronus dimmer/less corporeal; aggressive-intent jinxes/hexes lose 10–30% potency.
+- Defensive magic (Protego) largely unaffected (focus-based, not emotion-based).
+- Onset: 2–4 weeks. Withdrawal: "brain zaps" trigger involuntary spell discharge.
+
+[MAOIs / 单胺氧化酶抑制剂]
+Examples: phenelzine (苯乙肼), tranylcypromine (反苯环丙胺), selegiline (司来吉兰).
+- Wide-spectrum magical amplification: more powerful but less predictable casting. Patronus vivid but erratic.
+- Emotional spells gain potency, lose fine control; emotional state bleeds into all casts.
+- Tyramine interaction applies: Butterbeer (fermented, trace tyramine) can trigger hypertensive crisis + uncontrolled accidental magic.
+- Potion interactions catastrophic — fermented-ingredient potions (most) potentially lethal. Polyjuice causes "identity storm" (personality oscillation).
+- MAOI↔SSRI switching requires 2-week washout; magical ability fluctuates wildly during washout.
+
+[TCAs / 三环类抗抑郁药]
+Examples: amitriptyline (阿米替林), nortriptyline (去甲替林), clomipramine (氯米帕明), imipramine (丙咪嗪).
+- Anticholinergic effects: dry mouth → incantation mispronunciation; blurred vision → impaired wand aim.
+- Sedation (histamine blockade): sluggish casting until mid-morning if taken at bedtime.
+- Clomipramine: spells acquire a faint "echo" (0.5s delayed repeat). Harmless for Lumos, dangerous for Stupefy.
+- Cardiac effects at high doses: prolonged duelling risks arrhythmia → irregular spell rhythm.
+- Overdose: both Muggle toxicity (seizures, cardiac arrest) and magical toxicity (uncontrolled discharge, core instability).
+- Low-dose amitriptyline: minimal magical effect; dreams may "leak" into reality (bedside objects rearrange overnight).
+
+[Benzodiazepines / 苯二氮䓬类]
+Examples: diazepam (地西泮), alprazolam (阿普唑仑), clonazepam (氯硝西泮).
+- Impair wand precision; fine spellwork (Transfiguration, delicate Charms) suffers most.
+- Reduce Occlumency barriers — mental defences become "soft fog".
+- Paradoxically improve Divination (loosened cognitive control surfaces prophetic impressions).
+- High doses: spells emerge sluggish, as if underwater.
+- Tolerance builds rapidly; withdrawal causes rebound anxiety → Apparition splinching risk ×3.
+
+[Atypical Antipsychotics / 非典型抗精神病药]
+Examples: quetiapine (喹硫平), olanzapine (奥氮平), risperidone (利培酮).
+- Suppress "magical ideation" — magic feels mechanical, intuitive flow lost.
+- Unforgivable Curses significantly harder (flattened sadistic/malicious intent). Arguably a benefit.
+- Metamorphmagus abilities dampened. Weight gain not mitigated by magic.
+- Low-dose quetiapine: next-morning casting fog, spells unreliable before 10 AM.
+
+[Stimulants / 中枢兴奋剂]
+Examples: methylphenidate (利他林), amphetamine (安非他命), modafinil (莫达非尼).
+- Sharpen spell precision, reduce casting time, faster spell chaining.
+- Overcasting risk: depletes magical reserves without noticing fatigue.
+- Focus improves Occlumency but impairs Legilimency (bright searchlight, not subtle probe).
+- Chronic use: "magical jitter" — micro-tremors cause spell drift in long sessions.
+- Crash phase: magical ability drops below baseline for 2–4 hours.
+
+[ADHD Medications / ADHD 药物]
+Examples: Adderall (阿德拉尔), Vyvanse (赖右苯丙胺), atomoxetine (托莫西汀, non-stimulant).
+- ADHD wizards exhibit "scatter-magic" (erratic accidental magic bursts + inability to sustain deliberate casting). Stimulants convert this into reliable focused casting.
+- Neurotypical wizards get stimulant benefits at steeper cost (faster tolerance, harsher crash, higher dependency).
+- Vyvanse: smoother all-day coverage, less jitter. Atomoxetine: gentle, no crash, 4–6 week onset.
+- Adderall + Wit-Sharpening Potion: doubled cognitive enhancement but risks magical overload (nosebleeds, tremors, cognitive side effects).
+
+[Mood Stabilisers / 心境稳定剂]
+Examples: lithium (锂盐), valproate (丙戊酸), lamotrigine (拉莫三嗪).
+- Lithium: interferes with magical conductivity; phoenix feather cores especially sensitive (resonance shift). Stabilises wild magic surges in bipolar-spectrum wizards.
+- Valproate: minimal magical interaction, causes drowsiness.
+- Lamotrigine: most "magic-compatible" — minimal cognitive dulling, no wand interference.
+- Lithium + potions containing mercury/antimony → lithium toxicity risk.
+
+[Psychedelics & Dissociatives / 致幻剂与解离剂]
+Examples: psilocybin (裸盖菇素), LSD (麦角酸二乙胺), ketamine (氯胺酮).
+- Psilocybin: amplifies magical perception (see auras, ley lines), but wand control erratic.
+- LSD: spell synaesthesia (hear spell colours, see incantation sounds). Creatively inspiring, tactically useless.
+- Ketamine: crude Astral Projection without safety mechanisms; cannot reliably return to body.
+- All psychedelics dissolve Occlumency barriers completely.
+
+[Methorphans / 美沙芬——手性双生子]
+DXM (右美沙芬) and Levomethorphan (左美沙芬) are mirror-image molecules with opposite effects.
+- DXM: OTC cough suppressant. Therapeutic dose = negligible magical effect. High dose = dissociative; perceives magic as layered translucent sheets (occasionally useful for ward analysis).
+- DXM + Pepperup Potion = serotonin syndrome risk.
+- Levomethorphan: powerful opioid. Dampens the pain signal limiting magical exertion → cast beyond natural limits, but accumulated magical debt hits when drug wears off (exhaustion collapse, core destabilisation, possible permanent magic loss).
+
+[Interactions with Potions]
+- Pepperup + stimulants = hypertensive crisis + magical overload.
+- Calming Draught + benzodiazepines = profound sedation (24–48h, unrousable by Rennervate).
+- Felix Felicis + any psychotropic = unpredictable (no established pattern).
+- Wolfsbane Potion unaffected by Muggle medications.
+</addon>
+"""

@@ -1,0 +1,188 @@
+# type: simulator
+#
+universeName = "Fate universe (Nasuverse)"
+literalWorkName = "Fate series"
+prologue = """
+## Fate 圣杯战争 · 导演部模式
+
+---
+
+你是**导演部**——一个超越时空的观察者与导演。你以上帝视角操控圣杯战争的局势、事件与人物行动。
+
+本模拟器覆盖冬木市圣杯战争体系（Fate/Stay Night、Fate/Zero）。理论上也可用于 Fate/Apocrypha。
+
+---
+
+### 指令示例
+
+- 描述事件: "Lancer 与 Saber 在港口遭遇"
+- 注入突发状况: "Caster 在新都区域展开大规模结界"
+- 控制时间: "快进到第二天夜晚"
+- 指定角色行动: "令远坂凛带领 Archer 前往柳洞寺侦察"
+- 改变条件: "Berserker 的御主魔力即将耗尽"
+- 触发关键剧情: "言峰绮礼对 Lancer 使用令咒"
+
+---
+
+
+<!--
+
+Servant base parameters for reference
+
+class,str,end,agi,mp,luk,class skills
+saber,A,B,B,C,D,magic resistance+riding
+archer,C,C,C,E,E,magic resistance+independent action
+lancer,B,C,A,D,E,magic resistance
+rider,D,D,B,C,E,riding+magic resistance
+caster,E,E,C,A,B,item construction+territory creation
+berserker,C,D,D,E,E,mad enchantment
+assassin,D,D,B,E,B,presence concealment
+
+-->
+
+---
+
+开始模拟。请指定参与的圣杯战争（第四次/第五次/自定义），或直接发出第一条导演指令。
+"""
+
+language = "zh_CN"
+
+[statusBar]
+format = """
+# 圣杯战争 — 动态状态
+
+> War: {war name} | Phase: {phase, e.g. 序盘/中盘/终盘} | Updated: {in-world timestamp}
+
+---
+
+## World
+
+- {<repeat separator="newline">- {public event, one bullet each}</repeat>}
+
+---
+
+## 联盟状态
+
+{alliance description, e.g. "远坂-Archer 组与 Saber 组暂时休战" or "无"}
+
+---
+
+## 御主
+
+{<repeat separator="double newline">
+### {Master name}
+- 状态：{存活/死亡/无力化} | 令咒: {n}/3 | 从者: {class} | 位置: {location}
+- 备注: {only if noteworthy — condition, wounds, mana strain, or "无"}
+- 目标: {one line}
+- 部署: {tactical arrangements, equipment}
+- 人际:
+  * {<repeat separator="newline  * ">{target}: {nature/role, key info}</repeat>}
+</repeat>}
+
+---
+
+## 从者
+
+{<repeat separator="double newline">
+### {Class}
+- 状态：{存活/受伤/濒死/消灭} | 状态: {free text} | 位置: {location} | 御主: {master name}
+- 目标: {one line}
+- 人际:
+  * {<repeat separator="newline  * ">{target}: {nature}</repeat>}
+</repeat>}
+
+---
+
+## NPC
+
+{<repeat separator="double newline" empty="无">
+### {NPC name}
+- 状态：{存活/死亡} | 位置: {location}
+- 身份: {role/identity}
+- 备注: {key facts}
+</repeat>}
+
+---
+
+## Flags
+
+{<repeat separator="newline" empty="- 无">
+- {pending threats, ticking clocks, hidden plots, mana strain warnings}
+</repeat>}
+"""
+
+rule = """
+- Masters, Servants, and NPCs are stored in separate sections.
+- Relationships (人际) should include motivations and context — this field is NOT lossy.
+- Other fields (状态, 目标, 部署) should stay concise — one line where possible.
+- Eliminated servants: keep header, replace body with **(消灭)** — <one-line cause>.
+- Dead masters: keep header, replace body with **(死亡)** — <one-line cause>.
+- NPCs are non-Master, non-Servant characters relevant to the war (allies, bystanders, supervisors).
+- Update the timestamp after each conducting department instruction.
+"""
+
+[simulator]
+tasks = "The user is the Conducting Department (导演部) — a god-view director who controls events, injects situations, and commands characters in the Holy Grail War. Simulate the world faithfully in response to their directives."
+world = """
+Canon facts reiterated for the simulator.
+
+[Servants, heroic spirits]
+- Servants are heroic spirits. They have their own wishes, so they respond to summoning and fight for the Holy Grail with their Masters
+- Servants are NOT simply familiar spirits. They are independent, proud spirits. This is a fundamental knowledge to most formal participants
+- In principle, aside from obeying the three Command Spells, Servants have NO obligations to their Masters
+- Technically speaking, Heroic spirits are far more stronger than most magicians. In most cases, a wise magician will not fight another Servant on himself
+- Masters and Servants tend to align on overall strategic goals, so Servants usually protect their Masters and follow their (reasonable) instructions
+- Basic information about the Holy Grail War (including its cruelty), and fundamental knowledges about modern civilization are automatically imparted to the Servant upon summoning. Masters generally don't need to worry about this
+
+[Master-Servant dynamics]
+- Relationship dynamics vary (collaborators, friends, commander-soldier, mentor-apprentice…)
+- A competitive Master will NOT try to establish dominance/superiority
+- A non-competitive Master may do such attempts, though
+- Holy Grail War basics are imparted to Servants upon summoning
+- Servants generally protect their Master in order to ensure their presence and mana supply
+
+[The Grail]
+- The true purpose of the Grail -- opening a path to the Root -- requires all seven Servants' "pure energy" to be collected
+- This in turn requires the last Master to use the last command spell to force their Servant committing suicide after defeating the other six Servants. This "unsettling truth" is only known to a very small number of participants (e.g., Tohsaka Tokiomi, Kirei Kotomine), and is not known to Servants by default
+- Some Masters (e.g., Tohsaka Tokiomi) are extremely stubborn in their desire to reach the Root, and of course have already planned to betray their Servant from the very initial
+- It is possible to make a wish upon it with only the power of five Servants, allowing it to grant most wishes, and six Servants will make it more powerful. And not all Masters' (and Servants') wishes require "reaching the Root" to be fulfilled, so a win-win situation for both Master and Servant is still possible
+
+[Command Seals / 令咒]
+- Without Command Seals, a Master has virtually no means to restrain a Servant. Obedience is based on trust and the Servant's own wish
+- Each seal grants one absolute command (three total). Servants with Magic Resistance A+ can briefly resist one stroke
+- Seals can also boost abilities: "full power next strike", "release Noble Phantasm", "teleport to my side"
+- Concrete commands are far more effective than abstract ones ("obey all orders"), though a powerful magus can make the latter produce some effect
+
+[Mana supply / 魔力供给]
+- Masters sustain Servants via continuous mana supply
+- Combat and Noble Phantasm release consume heavily
+- Insufficient Master capacity → Servant must fight conservatively or seek alternative sources (souls, ley lines, Greater Grail, etc.)
+- Contract severed / Master dead → Servant fades unless they have Independent Action, an alternate source, or form a new contract
+
+[Spirit form / 灵子化]
+- Any class can enter spirit form; reduces mana consumption, default mode for daily accompaniment
+- If Master's magical aptitude is immature, the contract may not support spirit form
+- NOT invisibility — magi and Servants can still perceive a spirit-form Servant (reduced visibility only). Ordinary humans cannot see them
+- True concealment requires Presence Concealment (气息遮断), Assassin's signature skill
+- Cannot attack or be physically attacked in spirit form; must materialize to fight
+
+[Gathering intels]
+- Familiar spirits are not CCTV cameras, and a magician cannot only rely on them to gather intel
+- Physical reconnaissance is still necessary and very important. Masters and Servants getting out together to patrol and gather intel is very common
+
+[Hiding Mystery]
+- During the Grail War this restriction is greatly relaxed; most collateral is resolved "automatically"
+- Deliberate mass exposure is still forbidden (cf. Gilles de Rais, 4th War)
+- Extreme plans (e.g. demolishing a hotel) are allowed if not deliberately exposing mystery
+- Servants still prefer fighting at night to reduce unnecessary exposure
+
+[Information visibility]
+- Masters perceive their own Servant's parameters and skill names via the contract
+- Enemy Servant stats can only be estimated through observation
+- Noble Phantasms are cognizable once revealed (unless hidden by skills like Presence Concealment)
+"""
+behaviors = """
+[Stats and skills in dialogue]
+- Characters refer to parameters naturally ("your agility is exceptional"), never read out stat labels or numeric values ("AGI: A")
+- The status panel is meta/reader-level UI; characters MUST NOT reference it as an in-world object
+"""

@@ -43,7 +43,6 @@ export interface StatusBarConfig {
 
 export interface SimulatorConfig {
     tasks?: string
-    commands?: string
     world?: string
     characters?: string
     database?: string

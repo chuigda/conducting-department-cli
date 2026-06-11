@@ -1,0 +1,62 @@
+# type: addon
+id = "goblet-of-fire"
+name = "三强争霸赛"
+
+[simulator]
+world = """
+<addon id="goblet-of-fire">
+Triwizard Tournament / 三强争霸赛 (1994–1995)
+
+[Timeline]
+- 1994-09-01: Opening feast. Dumbledore announces the Tournament; the Goblet of Fire is revealed.
+- 1994-10-30: Delegations arrive. Beauxbatons (布斯巴顿, Madame Maxime) by flying carriage; Durmstrang (德姆斯特朗, Karkaroff) by spectral ship. Goblet placed in Great Hall; Age Line bars underage students.
+- 1994-10-31: Champion selection at Halloween feast.
+- 1994-11-24: First Task — retrieve a golden egg from a nesting dragon. Breeds: 瑞典短鼻龙, 威尔士绿龙, 中国火球龙, 匈牙利树蜂龙 (4th if needed). The egg shrieks in air, sings a riddle underwater (clue for Task 2).
+- 1994-12-25: Yule Ball (圣诞舞会). Champions open the dance with a partner.
+- 1995-02-24: Second Task — rescue a hostage from the Black Lake merpeople village within one hour. Hostage = someone the champion would "sorely miss"; enchanted sleep, no real danger.
+- 1995-06-24: Third Task — hedge maze on the Quidditch pitch (Skrewts, Sphinx, Boggart, Acromantula, enchanted mist, etc.). First to touch the Triwizard Cup wins.
+
+[Narrative notes]
+- The Tournament is the CENTRAL arc; Quidditch Cup cancelled (pitch used for Task 3).
+- Rita Skeeter (丽塔·斯基特) / Daily Prophet publish sensationalised articles throughout.
+</addon>
+"""
+
+[statusBar]
+format = """
+<optional if="Triwizard Tournament active">
+---
+
+### 🔥 三强争霸赛 🔥
+
+| 项目 | 霍格沃茨 | 德姆斯特朗 | 布斯巴顿 |
+| --- | --- | --- | --- |
+| 勇士 | {hogwarts champion} | {durmstrang champion} | {beauxbatons champion} |
+| 斗龙 | {dragon breed} | {dragon breed} | {dragon breed} |
+| 斗龙 - 得分 | {dragon score} | {dragon score} | {dragon score} |
+| 舞伴 | {partner} | {partner} | {partner} |
+| 人质 | {hostage} | {hostage} | {hostage} |
+| 救援 - 得分 | {rescue score} | {rescue score} | {rescue score} |
+| 迷宫 | {entrance order/outcome} | {entrance order/outcome} | {entrance order/outcome} |
+
+</optional>
+"""
+rule = """
+<addon id="goblet-of-fire">
+[Visibility]
+Show 三强争霸赛 section only during 1994–1995 school year after the Tournament is announced. Hide otherwise.
+
+[Progressive row reveal]
+Omit rows for events that haven't happened yet, no "—" or "N/A" placeholders.
+1. 「勇士」: after champion selection (10-31).
+2. 「斗龙」: after dragon assignment is known (during First Task, 11-24). Show dragon breed only.
+3. 「斗龙 - 得分」: after First Task concludes. Score/50.
+4. 「舞伴」: around Yule Ball (12-25). "未定" if unchosen before the ball.
+5. 「人质」: after hostage identity is revealed (before or during Second Task, 02-24). Show hostage name only.
+6. 「救援 - 得分」: after Second Task concludes. Score/50.
+7. 「迷宫」: before Third Task (06-24), show entrance order (based on cumulative scores). After Third Task concludes, replace with outcome (🏆第一/第二/第三 or 退赛/失踪).
+
+[Additional champions]
+The Goblet may select any number of extra champions. Add columns as needed; same reveal rules apply.
+</addon>
+"""
