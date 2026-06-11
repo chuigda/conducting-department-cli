@@ -5,7 +5,7 @@
 # core arts (Kotodama, Telekinesis, Qi Shield), auxiliary disciplines, the school system,
 # governance (S.S.S.C.), and the unique Two Realms Law.
 id = "eastern-magic"
-name = "东方修行体系"
+name = "神秘东方"
 
 [simulator]
 world = """
