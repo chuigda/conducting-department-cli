@@ -76,7 +76,7 @@ export function QuestionOverlay() {
             {/* Header */}
             <text
                 fg={headerFg}
-                content="🤔 模拟器提问"
+                content="模拟器提问"
                 attributes={TextAttributes.BOLD}
                 marginBottom={1}
             />
