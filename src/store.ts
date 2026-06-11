@@ -509,6 +509,8 @@ export function parseCommand(input: string): CommandResult {
             return { $k: 'ok' }
         case '/addon':
             return handleAddonCommand(parts)
+        case '/model':
+            return handleModelCommand(parts)
         case '/help':
             return { $k: 'info', message: HELP_TEXT }
         default:
@@ -741,6 +743,42 @@ export function getActiveAddons(): AdditionalCHR[] {
     return addons().filter(e => e.enabled).map(e => e.chr)
 }
 
+function handleModelCommand(parts: string[]): CommandResult {
+    if (!appConfig) return { $k: 'error', message: '配置未初始化' }
+
+    // /model with no args — show current model config
+    if (parts.length === 1) {
+        const lines = [
+            `当前模型配置:`,
+            `  simulator: ${appConfig.chatConfig.model}`,
+            `  status:    ${appConfig.statusBarConfig.model}`,
+            `  memory:    ${appConfig.memoryConfig.model}`,
+        ]
+        return { $k: 'info', message: lines.join('\n') }
+    }
+
+    const target = parts[1]
+    const modelId = parts.slice(2).join(' ')
+
+    if (!modelId) {
+        return { $k: 'error', message: '用法: /model simulator|status|memory <model-id>' }
+    }
+
+    switch (target) {
+        case 'simulator':
+            appConfig.chatConfig.model = modelId
+            return { $k: 'info', message: `simulator 模型已设置为: ${modelId}` }
+        case 'status':
+            appConfig.statusBarConfig.model = modelId
+            return { $k: 'info', message: `status 模型已设置为: ${modelId}` }
+        case 'memory':
+            appConfig.memoryConfig.model = modelId
+            return { $k: 'info', message: `memory 模型已设置为: ${modelId}` }
+        default:
+            return { $k: 'error', message: `未知目标 "${target}"。可用: simulator, status, memory` }
+    }
+}
+
 export const HELP_TEXT = `可用命令:
   /edit [N]         编辑消息 (N=倒序索引, 0=最新, 默认0)
   /edit N summary   编辑模拟器消息的摘要
@@ -757,5 +795,7 @@ export const HELP_TEXT = `可用命令:
   /addon disable <id>   禁用附加模块
   /addon up <id> [n]    上移附加模块优先级
   /addon down <id> [n]  下移附加模块优先级
+  /model            查看当前模型配置
+  /model simulator|status|memory <model-id>  设置模型
   /clear            清除错误/提示消息
   /help             显示帮助`
