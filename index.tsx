@@ -139,6 +139,11 @@ async function main() {
                     addonPaths: ctx.addonPaths,
                 })
                 writeFileSync(ctx.savePath, JSON.stringify(session, null, 2))
+
+                const relPath = ctx.savePath.replace(/\\/g, '/')
+                const resumeArgs = [`--load "${relPath}"`]
+                console.log(`\nSession saved to ${relPath}`)
+                console.log(`Resume with: bun run index.tsx ${resumeArgs.join(' ')}`)
             } catch (_) {
                 // Best effort — don't crash on save failure
             }
