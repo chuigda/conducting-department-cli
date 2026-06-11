@@ -249,13 +249,17 @@ export async function sendInstruction(instruction: string) {
     currentAbortController = new AbortController()
     const signal = currentAbortController.signal
 
-    // Add the user message immediately
+    // Snapshot messages BEFORE adding the player message to avoid duplicating
+    // the user instruction in the LLM prompt (it's passed separately as userInstruction)
+    const snapshot = messages.slice()
+
+    // Add the user message immediately (for UI display)
     addPlayerMessage(text)
 
     try {
         const result = await executePipeline(
             appConfig,
-            messages.slice(), // snapshot
+            snapshot,
             text,
             {
                 onStreamingDelta(accumulated) {
@@ -564,6 +568,8 @@ function handleEditCommand(parts: string[]): string | null {
 }
 
 function handleResendCommand(): string | null {
+    if (isSending()) return '正在生成中，无法重发'
+
     // Find last player message
     const lastPlayer = messages.findLast(m => m.$k === 'player')
     if (!lastPlayer) return '没有可重发的用户消息'

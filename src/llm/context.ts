@@ -25,8 +25,8 @@ export function buildSimulationRequest(
     messages: Message[],
     userInstruction: string
 ): ChatCompletionRequest {
-    // ~1.5 tokens per Chinese char + 1536 thinking budget
-    const maxTokens = Math.ceil(config.outputBudget * 1.5 + 1536)
+    // ~1.5 to 2 tokens per Chinese char + 2048 thinking budget
+    const maxTokens = Math.ceil(config.outputBudget * 2 + 2048)
 
     const systemPrompt = buildSimulatorSystemPrompt(
         config.simulatorCHR,
