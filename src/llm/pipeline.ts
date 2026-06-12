@@ -212,15 +212,20 @@ export async function executePipeline(
     const statusBarApi = resolveApi(config, 'statusBar')
 
     let statusBar = (messages.findLast(m => m.$k === 'simulator') as SimulatorMessage | undefined)?.statusBar ?? ''
+    let skipPostProcessing = false
 
     try {
         const statusResult = await completion(statusBarApi, statusBarRequest, signal)
         statusBar = statusResult.content
     } catch (err) {
-        if ((err as Error).name === 'AbortError') throw err
-        callbacks.onError('status-bar', err as Error)
-        callbacks.onWorkStatus({ $k: 'error-status-bar' })
-        // Non-fatal: continue with previous status bar
+        if ((err as Error).name === 'AbortError') {
+            // User cancelled — keep previous status bar, skip compression, but content is still valid
+            skipPostProcessing = true
+        } else {
+            callbacks.onError('status-bar', err as Error)
+            callbacks.onWorkStatus({ $k: 'error-status-bar' })
+            // Non-fatal: continue with previous status bar
+        }
     }
 
     // ── Assemble SimulatorMessage ──
@@ -241,24 +246,29 @@ export async function executePipeline(
     }
 
     // ── Stage 3: Memory compression (if needed) ──
-    const messagesWithNew = [...messages, { $k: 'player' as const, content: userInstruction }, simMsg]
-    const activeLines = computePreciseMemoryInUse(messagesWithNew)
+    if (!skipPostProcessing) {
+        const messagesWithNew = [...messages, { $k: 'player' as const, content: userInstruction }, simMsg]
+        const activeLines = computePreciseMemoryInUse(messagesWithNew)
 
-    if (activeLines.length > config.preciseMemoryLimit) {
-        callbacks.onWorkStatus({ $k: 'compressing' })
+        if (activeLines.length > config.preciseMemoryLimit) {
+            callbacks.onWorkStatus({ $k: 'compressing' })
 
-        const compressRequest = buildMemoryCompressRequest(config, messagesWithNew, config.compressPerTime)
-        const memoryApi = resolveApi(config, 'memory')
+            const compressRequest = buildMemoryCompressRequest(config, messagesWithNew, config.compressPerTime)
+            const memoryApi = resolveApi(config, 'memory')
 
-        try {
-            const compressResult = await completion(memoryApi, compressRequest, signal)
-            simMsg.coarseMemory = compressResult.content
-            simMsg.activePreciseMemory = Math.max(0, simMsg.activePreciseMemory - config.compressPerTime)
-        } catch (err) {
-            if ((err as Error).name === 'AbortError') throw err
-            callbacks.onError('compress', err as Error)
-            callbacks.onWorkStatus({ $k: 'error-compress' })
-            // Non-fatal: continue without compression
+            try {
+                const compressResult = await completion(memoryApi, compressRequest, signal)
+                simMsg.coarseMemory = compressResult.content
+                simMsg.activePreciseMemory = Math.max(0, simMsg.activePreciseMemory - config.compressPerTime)
+            } catch (err) {
+                if ((err as Error).name === 'AbortError') {
+                    // User cancelled compression — message content still valid
+                } else {
+                    callbacks.onError('compress', err as Error)
+                    callbacks.onWorkStatus({ $k: 'error-compress' })
+                }
+                // Non-fatal: continue without compression
+            }
         }
     }
 
