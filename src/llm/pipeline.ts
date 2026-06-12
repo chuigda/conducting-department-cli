@@ -50,6 +50,52 @@ export interface PipelineCallbacks {
     onToolCallLog: (entry: string) => void
 }
 
+interface DispatchResult {
+    interaction: ToolInteraction | null
+    content: string
+}
+
+/**
+ * Dispatch a single tool call to the appropriate executor.
+ * Returns the ToolInteraction (for recording) and the content to send back as tool result.
+ */
+async function dispatchToolCall(
+    toolCall: ToolCall,
+    callbacks: PipelineCallbacks
+): Promise<DispatchResult> {
+    function parseArgs<T>(fallback: T): T {
+        try {
+            return JSON.parse(toolCall.function.arguments)
+        } catch {
+            return fallback
+        }
+    }
+
+    switch (toolCall.function.name) {
+        case 'ask_question': {
+            const args = parseArgs<{ prompt: string; options?: string[] }>({ prompt: toolCall.function.arguments })
+            const options = args.options ?? []
+            const answer = await callbacks.onRequestUserInput(args.prompt, options)
+            const interaction: ToolInteraction = { $k: 'ask_question', success: true, prompt: args.prompt, options, answer }
+            return { interaction, content: answer }
+        }
+        case 'read': {
+            const args = parseArgs<{ path: string }>({ path: toolCall.function.arguments })
+            const { success, result } = executeRead(args.path)
+            const interaction: ToolInteraction = { $k: 'read', success, path: args.path, result }
+            return { interaction, content: result }
+        }
+        case 'glob': {
+            const args = parseArgs<{ pattern: string }>({ pattern: toolCall.function.arguments })
+            const { success, result } = executeGlob(args.pattern)
+            const interaction: ToolInteraction = { $k: 'glob', success, pattern: args.pattern, result }
+            return { interaction, content: result }
+        }
+        default:
+            return { interaction: null, content: `Error: unknown tool "${toolCall.function.name}"` }
+    }
+}
+
 export interface PipelineResult {
     simulatorMessage: SimulatorMessage
 }
@@ -134,79 +180,20 @@ export async function executePipeline(
         }]
 
         for (const toolCall of simResult.toolCalls) {
-            if (toolCall.function.name === 'ask_question') {
-                let args: { prompt: string; options?: string[] }
-                try {
-                    args = JSON.parse(toolCall.function.arguments)
-                } catch {
-                    args = { prompt: toolCall.function.arguments }
-                }
-
-                const options = args.options ?? []
-                const answer = await callbacks.onRequestUserInput(args.prompt, options)
-
-                const interaction: ToolInteraction = { $k: 'ask_question', success: true, prompt: args.prompt, options, answer }
+            const { interaction, content } = await dispatchToolCall(toolCall, callbacks)
+            if (interaction) {
                 toolInteractions.push(interaction)
-
                 const keyArg = extractKeyArgument(interaction)
-                callbacks.onToolCallLog(`⚙ tool call: tool=ask_question, arguments="${keyArg}", result=success`)
-
-                turnMessages = [...turnMessages, {
-                    role: 'tool',
-                    content: answer,
-                    tool_call_id: toolCall.id,
-                }]
-            } else if (toolCall.function.name === 'read') {
-                let args: { path: string }
-                try {
-                    args = JSON.parse(toolCall.function.arguments)
-                } catch {
-                    args = { path: toolCall.function.arguments }
-                }
-
-                const { success, result } = executeRead(args.path)
-
-                const interaction: ToolInteraction = { $k: 'read', success, path: args.path, result }
-                toolInteractions.push(interaction)
-
-                const keyArg = extractKeyArgument(interaction)
-                callbacks.onToolCallLog(`⚙ tool call: tool=read, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`)
-
-                turnMessages = [...turnMessages, {
-                    role: 'tool',
-                    content: result,
-                    tool_call_id: toolCall.id,
-                }]
-            } else if (toolCall.function.name === 'glob') {
-                let args: { pattern: string }
-                try {
-                    args = JSON.parse(toolCall.function.arguments)
-                } catch {
-                    args = { pattern: toolCall.function.arguments }
-                }
-
-                const { success, result } = executeGlob(args.pattern)
-
-                const interaction: ToolInteraction = { $k: 'glob', success, pattern: args.pattern, result }
-                toolInteractions.push(interaction)
-
-                const keyArg = extractKeyArgument(interaction)
-                callbacks.onToolCallLog(`⚙ tool call: tool=glob, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`)
-
-                turnMessages = [...turnMessages, {
-                    role: 'tool',
-                    content: result,
-                    tool_call_id: toolCall.id,
-                }]
+                callbacks.onToolCallLog(`⚙ tool call: tool=${interaction.$k}, arguments="${keyArg}", result=${interaction.success ? 'success' : 'fail'}`)
             } else {
-                // Unknown tool — return error
                 callbacks.onToolCallLog(`⚙ tool call: tool=${toolCall.function.name}, arguments="${toolCall.function.arguments}", result=fail`)
-                turnMessages = [...turnMessages, {
-                    role: 'tool',
-                    content: `Error: unknown tool "${toolCall.function.name}"`,
-                    tool_call_id: toolCall.id,
-                }]
             }
+
+            turnMessages = [...turnMessages, {
+                role: 'tool',
+                content,
+                tool_call_id: toolCall.id,
+            }]
         }
 
         // Reset streaming state for next round
