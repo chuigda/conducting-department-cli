@@ -1,0 +1,212 @@
+# type: addon
+#
+# AU world-building addon: the International Statute of Secrecy as a dual-purpose
+# instrument — both shield against Muggle persecution and tool of aristocratic
+# class consolidation by the Sacred Twenty-Eight.
+id = "statute-of-secrecy"
+name = "保密法与封建法权"
+
+[simulator]
+world = """
+<addon id="statute-of-secrecy">
+The International Statute of Wizarding Secrecy, Blood Purity, and Feudal Aristocratic Legal Order
+国际巫师保密法、纯血统意识形态与封建贵族阶级法权
+
+[Historical formation / 历史形成]
+
+- The official narrative: the Statute was passed to protect wizardkind from Muggle persecution. This is the story every Hogwarts student learns in History of Magic. It is not exactly false — but it is radically incomplete, and its incompleteness is ideologically functional.
+
+- The witch-hunt alibi and its problems:
+  * Muggle witch-hunts peaked in the late 16th and early 17th centuries. By the 1680s they were already declining sharply across Western Europe. If physical danger were the true motive, the Statute should have been passed a century earlier.
+  * The ancient houses were never seriously threatened by witch-hunts. Their wards, Fidelius-protected estates, and generational defensive magic made Muggle mobs irrelevant. Those who suffered were isolated practitioners, hedge-witches, Muggle-born first-generation wizards — precisely those without aristocratic protection.
+  * The witch-hunt narrative serves a retrospective legitimation function: it provides a sympathetic origin story ("we were persecuted") for a law whose actual impetus was political, not physical.
+
+- The real crisis — the Muggle constitutional revolutions:
+  * 1640s: The English Civil War and Cromwell's Commonwealth destroy the principle of divine right. For the first time in English history, a king is tried and executed by parliamentary authority. The message: no privilege is above public accountability.
+  * 1688: The Glorious Revolution establishes parliamentary sovereignty. The Bill of Rights (1689) codifies that the Crown rules by consent, not by blood. Feudal prerogatives must now justify themselves before a rational-legal order.
+  * For the wizarding aristocracy, this is an existential threat — not to their bodies, but to their logic of legitimation. Their entire social order rests on inherited privilege, unaccountable authority, and the fusion of judicial-legislative-executive power in the Wizengamot. The Muggle world has just invented a political vocabulary (consent of the governed, natural rights, rule of law) that, if it ever reached the wizarding population, would render their feudal structure indefensible.
+  * The Statute of Secrecy (1689 — the same year as the Bill of Rights) is not coincidence. It is the wizarding aristocracy's answer to constitutionalism: rather than reform, withdraw. Seal the borders. Ensure that Muggle political philosophy, Muggle legal concepts, and Muggle institutional models can never contaminate the closed world in which their power operates unchallenged.
+
+- The structural consequences of separation:
+  * Muggle-born wizards are sealed inside a society where they arrive as outsiders with no inherited wealth, no family connections, no knowledge of customs, and no recourse to any external institution. Their Muggle education, credentials, and family resources become worthless overnight upon entering the wizarding world.
+  * No external audit, no free press with Muggle-world comparison points, no importation of democratic ideas. The wizarding public has no framework for conceiving that their institutions could be otherwise.
+  * The Statute is self-reinforcing: because it does provide genuine protection (Muggle military technology grows ever more dangerous), anyone who questions it can be accused of recklessly endangering all wizardkind. Structural critique becomes indistinguishable from treason.
+
+[The Sacred Twenty-Eight / 神圣二十八族]
+
+- The "Sacred Twenty-Eight" (coined in the 1930s by Cantankerus Nott's Pure-Blood Directory) are not a formal legal category. No statute names them. Their privilege operates through convention, precedent, and institutional inertia.
+- Key mechanisms of informal dominance:
+  * Wizengamot appointments: officially merit-based or ministerial nomination, but in practice seats pass within a small circle of families through mentorship, sponsorship, and tacit agreement. A wizard without a patron from the old families rarely obtains a seat.
+  * Ministry senior positions: no formal blood requirement, but promotion depends on networks, references, and "fit" — all controlled by incumbents from established families.
+  * Economic gatekeeping: see below.
+- Not all Twenty-Eight families are equally powerful. Some (Malfoy, Black, Lestrange, Nott) sit at the apex; others (Weasley, Longbottom) occupy lower positions within the aristocracy, retaining status but lacking wealth or active political influence.
+- The system co-opts exceptional Muggle-borns (e.g. Severus Snape's talent earning Malfoy patronage, Lily Evans' brilliance earning Slughorn's network access) as proof that "blood doesn't matter" — while the structural barriers remain intact for the majority.
+
+[Economic foundations / 经济基础]
+
+- Land: Ancient families hold unplottable estates, hereditary leaseholds on Diagon Alley and Hogsmeade commercial property, and territorial rights over magical resource sites (potion ingredient habitats, ley line nodes). These holdings predate the Ministry and are protected by customary law that the Wizengamot — staffed by the same families — has no incentive to reform.
+- Finance: Gringotts operates independently, but the oldest vaults enjoy preferential terms negotiated centuries ago. Several Twenty-Eight families hold founding-era agreements granting reduced fees, priority access, and informal consultation rights with the goblin banking council.
+- Patronage economy: The wizarding world's small population means most employment flows through personal networks rather than open markets. The families control apprenticeships, research funding, and access to restricted magical knowledge. A Muggle-born wizard graduating Hogwarts with Outstanding NEWTs still needs someone to open doors.
+
+[Wizengamot structure / 威森加摩]
+
+- The Wizengamot serves simultaneously as supreme court, legislative body, and constitutional council — an archaic fusion of powers that predates Muggle separation-of-powers doctrine.
+- Membership: approximately 50 seats. No formal hereditary seats exist in law, but in practice roughly 60% of members at any given time come from fewer than fifteen families. Seats are "lifetime appointments" — members serve until death, resignation, or expulsion by two-thirds vote.
+- The Chief Warlock presides but holds no formal veto. Influence operates through agenda-setting, committee assignments, and the power to call or delay votes.
+- Trials before the full Wizengamot carry no right to legal representation (as seen in canon). This benefits those with social capital to call character witnesses from the establishment; Muggle-borns and outsiders face the body alone.
+- Reform attempts (e.g. Dumbledore's quiet advocacy for Muggle-born protections) are structurally disadvantaged: any proposed change requires majority approval from a body whose composition reflects the status quo.
+
+[The Statute as class instrument / 保密法作为阶级工具]
+
+- The Statute's enforcement mechanisms disproportionately affect Muggle-borns:
+  * Memory modification of Muggle family members is routine and normalized. A Muggle-born wizard's parents live in a state of managed ignorance — unable to advocate for their child in wizarding society, unable to provide the intergenerational knowledge that pureblood families transmit. This is not incidental; it structurally reproduces the Muggle-born's orphan-like dependence on wizarding institutions controlled by the old families.
+  * Restrictions on Muggle-wizarding economic interaction prevent Muggle-born wizards from leveraging Muggle-world wealth, education, or professional credentials. A Muggle-born surgeon's skills are worthless; a pureblood heir's inherited vault speaks for itself.
+  * The prohibition on revealing magic to Muggles is enforced asymmetrically: a pureblood child performing accidental magic in an all-wizarding village faces no scrutiny; a Muggle-born child in a Muggle neighbourhood triggers Ministry surveillance before they even receive their Hogwarts letter. The Trace itself is a class instrument — it monitors those who live among Muggles, not those on warded estates.
+  * The Muggle-Born Registration Commission (1997) was not an aberration but an extreme expression of a logic already embedded in the system — the idea that Muggle-borns must justify their presence, while purebloods belong by birthright.
+- For the old families, the Statute preserves a closed market: no competition from Muggle capital, no influx of Muggle political philosophy (constitutionalism, universal suffrage, separation of powers, human rights law), no external audit of wizarding institutions. The Statute does not merely hide wizards from Muggles — it hides the possibility of alternative political arrangements from wizards.
+
+[Blood purity ideology / 纯血统意识形态]
+
+- "Pure blood" as Master Signifier (S1):
+  * "Pure blood" is not a descriptive category — it has no stable positive content. Try to define it positively and you immediately encounter a proliferation of contradictions:
+    - The "Sacred Twenty-Eight" list was only codified in the 1930s by Cantankerus Nott. It was compiled retroactively — not discovered. The Potters were excluded because Nott found the surname "too common" (too Muggle-sounding) — a purely aesthetic, arbitrary judgment. The category "pureblood" does not pre-exist its enunciation; the act of listing creates the thing it claims to describe.
+    - The Weasleys are on the list, yet are universally labelled "blood traitors." So "pureblood" includes families that must then be re-excluded by a supplementary judgment. The category cannot hold itself together without constant ad hoc revision.
+    - The folk theory admits "half-blood × half-blood = pureblood" after sufficient generations. But how many? Three? Four? No one can say — because the criterion is not biological but social: you are pureblood when the right people stop questioning you.
+    - In the 10th–11th centuries, when the Founders lived, wizarding and Muggle communities were thoroughly intermixed. Every ancient family has Muggle ancestors within historical memory. "Purity" is not an empirical claim but a retroactive erasure — genealogical records are edited, inconvenient branches pruned, Muggle spouses quietly forgotten.
+    - Nobody can actually verify blood purity by inspecting genealogies three, five, ten generations back. The claim is structurally unverifiable — and it needs to be, because verifiability would destroy it.
+  * In Lacanian terms: "pure blood" is a Master Signifier (S1), an empty point de capiton that retroactively organizes the entire symbolic field around itself. Its emptiness is not a defect but its operating condition. Precisely because it has no fixed positive content, it can never be disproven — only asserted, enforced, and defended through the authority of those who speak it.
+  * The function of S1 is not to mean something but to anchor meaning. "Pure blood" quilts together a chain of signifiers — nobility, tradition, magical heritage, rightful authority, cultural refinement, trustworthiness — into an apparently coherent ideological whole. None of these qualities logically require blood purity, but once S1 is in place, they are all retroactively "explained" by it.
+  * This is why the ideology is unfalsifiable from within: a talented Muggle-born doesn't refute the ideology — she becomes "the exception that proves the rule," or is suspected of having stolen magic, or is praised in a way that reinforces the frame ("remarkable, for someone of her background"). A pureblood Squib doesn't disprove the theory — he is expelled from visibility.
+  * The Master Signifier produces its subjects: a Malfoy does not first observe his own superiority and then adopt the label "pureblood." Rather, being inscribed as "pureblood" retroactively constitutes him as noble, worthy, naturally authoritative. The signifier precedes and produces the identity it appears merely to describe.
+  * The question "what actually is pure blood?" is therefore the wrong question — or rather, it is the question the ideology must ensure is never asked seriously. The answer ("nobody knows, it's arbitrary") would collapse the entire symbolic edifice. The system survives precisely because the question is deflected into euphemism ("good families," "old blood," "our kind"), social performance (manners, accent, connections), and institutional inertia (everyone acts as if the distinction is real, so it becomes real in its consequences).
+
+- Ideological operation in practice:
+  * The discourse of blood purity does not primarily function through explicit hate speech (that is Voldemort's vulgar version). Its normal mode is euphemism and structural assumption: "good family," "proper upbringing," "our kind," "old ways." These phrases never mention blood directly, yet every participant understands the sorting principle they encode.
+  * The ideology addresses Muggle-borns through a double bind: they are told blood doesn't matter (formal equality) while every institution they encounter is structured as though it does (material inequality). This produces a characteristic pathology: the successful Muggle-born who internalizes the aristocratic value system and distances herself from other Muggle-borns (identificatory capture by S1).
+  * Squibs represent the ideology's point of breakdown — living proof that "pure blood" does not guarantee magical power. Their systematic expulsion from wizarding society (denial of wand rights, social erasure, pressure to live as Muggles) is not cruelty for its own sake but structural necessity: they must be made invisible to preserve S1's coherence.
+
+- "Blood traitor" as the sublime object of ideology:
+  * The ideology of blood purity promises a fantasy of wholeness: if everyone with pure blood occupied their rightful place, wizarding society would be harmonious, powerful, and justly ordered. But this promise is never fulfilled — material reality keeps failing to match the fantasy. There must therefore be an explanation for the gap that does not indict the ideology itself.
+  * The "blood traitor" (Weasleys, Sirius Black, Andromeda Tonks) is that explanation — the sublime object in the Žižekian sense. The blood traitor is the figure who, by betraying their own blood, supposedly prevents the pureblood order from achieving its promised fullness. "If only these traitors would stop undermining us from within, everything would be as it should be."
+  * This is structurally identical to the antisemitic logic Žižek analyses: the obstacle is never the system's own impossibility but always an agent of sabotage. The blood traitor is dangerous precisely because they are inside the circle — they possess the correct S1 inscription ("pure blood") yet refuse to perform the identification it demands. They prove that S1 does not automatically produce loyal subjects, which threatens the entire claim that blood determines character.
+  * The blood traitor must therefore be punished disproportionately — not merely excluded (like a Muggle-born, who was never inside) but violently expelled (burned off tapestries, disowned, socially annihilated). The intensity of the reaction measures the ideological threat: the traitor demonstrates that the system requires active consent, not natural obedience. This cannot be admitted.
+  * The fantasy operates: "Once the blood traitors are dealt with, once the Muggle-borns are expelled, once the correct order is restored…" — but the promise is structurally unrealisable. The ideology needs its sublime object. If the Weasleys did not exist, they would have to be invented.
+
+- Relationship between S1 and material base:
+  * The Master Signifier is not mere superstructure floating above economic reality. It is the mechanism by which material privilege (land, gold, political access) is transformed into symbolic legitimacy. Without S1, the aristocracy's wealth would appear as what it is: inherited accident. With S1, it appears as natural order.
+  * This is why blood purity ideology intensifies precisely when material conditions threaten the aristocracy (Muggle-born demographic growth, post-war social mobility): the symbolic must work harder when the real no longer cooperates.
+  * Voldemort's movement represents S1 in crisis — the moment when the Master Signifier, failing to maintain coherence through institutional means, resorts to brute force. The irony (a half-blood championing blood purity) is not a contradiction but a structural feature: the Master Signifier was never about empirical blood; it always operated at the level of symbolic identification.
+
+- S1 and the disavowal of Muggle political modernity:
+  * Blood purity ideology and the denial of Muggles are not two separate prejudices — they are two faces of a single ideological operation. To affirm "pure blood" is simultaneously to deny the legitimacy of everything that comes from the Muggle world — including, crucially, Muggle political philosophy.
+  * The post-1689 Muggle world produced liberal democracy, constitutional government, separation of powers, universal suffrage, the concept of human rights, rule of law as opposed to rule by status. Every one of these ideas is structurally fatal to wizarding feudalism. The aristocracy cannot permit these concepts to enter the wizarding symbolic order — not because they are "Muggle" in some essential sense, but because they provide a vocabulary for naming what the current system actually is (arbitrary, hereditary, unaccountable).
+  * "Muggles are inferior" is therefore not merely a statement about Muggles — it is a prophylactic against Muggle ideas. If Muggles as such are beneath contempt, then anything that originates from Muggle civilisation can be dismissed without engagement. "Democracy? That's a Muggle thing." "Rights? Muggle nonsense." The contempt for Muggles immunises the wizarding world against the political thought that would dissolve its feudal order.
+  * The chain of denigration — from ideological denial to social hierarchy:
+    The disavowal of Muggle political modernity does not remain abstract. It radiates outward into a complete hierarchy of contempt, each level a logical extension of the one before:
+    1. Muggle ideas and institutions (democracy, constitutionalism, rights discourse) — rejected as irrelevant to "our world," beneath serious engagement.
+    2. Muggles as a group (their technology, their civilisation, their way of life) — despised as bumbling, helpless, fundamentally lesser beings. Muggle Studies at Hogwarts is a joke subject precisely because the ideology requires that Muggles not be taken seriously as a civilisation.
+    3. Muggle-borns — wizards contaminated by origin. They carry the trace of the Muggle world into wizarding society: Muggle parents, Muggle habits, Muggle assumptions. "Mudblood" names this contamination. They are the breach in the quarantine, the point where Muggle-ness leaks in.
+    4. Half-bloods — a gradient of contamination, tolerated in proportion to distance from the Muggle ancestor. A half-blood with a pureblood father and witch mother is barely marked; a half-blood with a Muggle parent is nearly as suspect as a Muggle-born.
+    5. Squibs — the most threatening category: they are pure-blood by genealogy yet Muggle in capacity. They prove that blood does not guarantee magic, and therefore must be expelled into the Muggle world (made invisible) to preserve the ideology's coherence. They are, in effect, treated as Muggles who accidentally carry the wrong surname.
+    6. "Muggle-lovers" and blood traitors (Weasleys, Dumbledore) — purebloods who voluntarily breach the quarantine. They are not contaminated by origin but by choice, which makes them more dangerous: they demonstrate that a pureblood subject can look at Muggles without contempt, can engage with their world without losing magical identity. This possibility must be stigmatised as perversion ("Muggle-lover") or treason ("blood traitor").
+    Each level justifies and reinforces the others. You cannot admit that Muggle democracy is a functional system without implying that Muggle-borns might carry valuable perspectives; you cannot respect Muggle-borns without questioning why blood determines social position; you cannot question blood-hierarchy without threatening the aristocracy's legitimation. The chain holds together or it falls apart entirely — which is why the ideology reacts with disproportionate violence to any breach at any level.
+  * This creates a reciprocal reinforcement loop:
+    - Blood purity ideology demands the denigration of Muggles (because Muggle ancestry is the pollutant) → denigration of Muggles forecloses engagement with Muggle political modernity → foreclosure of political modernity preserves the feudal structure → the feudal structure requires blood purity ideology to legitimate itself → (loop).
+    - The Statute of Secrecy is the material enforcement mechanism of this loop: it is not enough to ideologically dismiss Muggle ideas — the physical border must also be maintained, because ideas leak across borders. The Statute ensures that no wizard casually encounters a functioning parliament, reads a Muggle newspaper editorial about civil liberties, or has a Muggle-raised friend who asks "why does your government have no elections?"
+  * Arthur Weasley's fascination with Muggle objects is ideologically threatening not because rubber ducks are dangerous, but because curiosity about Muggles is the first step toward curiosity about how Muggles organise their society — and that question is the one the system cannot survive being asked. This is why "Muggle-lover" functions as a slur within pureblood circles: it names someone whose interest in the Other might breach the ideological quarantine.
+
+- Modes of belief — how families inhabit the ideology:
+  * The ideology commands belief. As long as a family's material position depends on the symbolic order anchored by S1, there is no position outside belief — only different modes of inhabiting it. The question is never "do they believe?" but "how do they believe?"
+
+  * False consciousness (Parkinson, Crabbe, Goyle):
+    - These families "do not know what they are doing." They genuinely believe that pure blood confers innate superiority — that Muggle-borns are biologically inferior, that blood determines magical and moral worth. The ideology operates at the level of sincere conviction.
+    - This is the most stable form of ideological capture: because the belief is experienced as direct perception of reality ("I can simply see that we are better"), no argumentative challenge can reach it. Evidence to the contrary is processed through the ideological frame (a talented Muggle-born "must have stolen magic" or "is an anomaly").
+    - Politically, these families are reliable foot soldiers. They joined Voldemort's first war without hesitation because his programme merely stated explicitly what they already believed implicitly. They require no cynical calculation because no calculation is occurring — only faith.
+
+  * Pure cynical reason (Greengrass, Zabini):
+    - These families know perfectly well that "pure blood" is a social construction with no empirical referent. They see S1 for what it is: an arbitrary anchor that happens to legitimate their position. They maintain it because it serves their interests — and they know it is fragile.
+    - This knowledge produces a distinctive political strategy: hedging. The Greengrasses and Zabinis did not join Voldemort in either war — not because they disagreed with blood supremacy as principle, but because they understood that S1's power derives from institutional consensus, not brute force. Voldemort's project (attempting to make the implicit explicit, to enforce by violence what normally operates through convention) threatened to expose the constructedness of the entire edifice. If you say the quiet part loud, people might notice it was always just a signifier.
+    - Their cynicism is not a position outside the ideology. They still perform purity, still marry within the circle, still transmit the habitus. Žižek's point: ideology functions perfectly well through cynical distance. "I know pure blood means nothing, but still…" (je sais bien, mais quand même) — the "but still" is where the ideology actually operates. They act as if they believe, and the acting is all that the ideology requires.
+
+  * Partial internalisation (Malfoy, Riddle/Voldemort):
+    - These subjects occupy the most psychologically complex position: they half-know the constructedness of S1 but have internalised the ideology deeply enough that this knowledge cannot achieve full articulation. The construction has become culture, habit, identity — it has sedimented into something experienced as natural even while an intellectual remainder whispers that it is not.
+    - Lucius Malfoy can, in moments of private honesty, recognise that "pure blood" is a political tool. But this recognition does not liberate him — it coexists with a genuine, affective investment in pureblood superiority that is not reducible to cynical strategy. The ideology has been inscribed at the level of jouissance, not merely belief.
+    - Voldemort is the limit case: a half-blood who constructed an entire identity around S1, repressing his own origin (the Muggle father) so completely that the repressed returns only as symptom (the obsessive need to prove blood supremacy, the rage against the father's name). He does not merely use the ideology; he is used by it. His "choice" to champion blood purity was never a free strategic decision — it was the only subject-position available to him once he invested in S1 as the ground of his being.
+    - For these families, the ideology is neither transparent delusion (like Crabbe) nor transparent instrument (like Greengrass). It is something more like a second nature that they can neither fully believe nor fully disbelieve — and this irresolvable tension often produces the most volatile political behaviour (Lucius's oscillation between Voldemort and respectability; Draco's inability to commit to either side).
+
+  * The structural point: there is no family that "doesn't believe" while remaining inside the system. The Weasleys' disbelief is possible only because they have already paid the price of symbolic exile ("blood traitors"). To remain within the pureblood circle — to retain its material benefits — one must believe in some mode. The ideology does not ask for sincerity; it asks for participation.
+
+- Case study: Lucius Malfoy — partial belief and its collapse:
+  * Lucius occupies the "partial internalisation" position at its most politically instructive. His relationship to S1 is neither pure faith nor pure cynicism but an unstable mixture whose proportions shift with circumstance:
+    - The functional side: Lucius uses blood purity as political currency — patronage, Ministry influence, social gatekeeping. He understands at some level that these are levers, not sacred truths. Evidence: if he were a true believer in the manner of Bellatrix, he would have endured Azkaban for the Dark Lord rather than claiming Imperius control. A genuine fanatic does not fabricate excuses; they martyrise themselves. Lucius chose comfort and respectability over martyrdom — the act of a man who values outcomes, not principles.
+    - The affective side: and yet Lucius is not a pure cynic either. His political frustrations in peacetime (Arthur Weasley's Muggle Protection Act passing, Dumbledore's continued influence) produce not merely strategic recalculation but genuine nostalgic affect — a longing for "the old days" when power was exercised without apology. This nostalgia is ideological: it retroactively edits the first war into a period of aristocratic glory, erasing its actual content (torture, terror, servitude to a half-blood).
+    - The diary: Voldemort entrusted Lucius with the Riddle diary, saying only "this is important, keep it safe." Lucius treated it as a disposable political weapon — slipping it to Ginny Weasley to discredit Arthur. A true believer would never risk an object his master called important on a petty political gambit. A pure cynic would have analysed its value more carefully. Lucius did neither: he acted from the partial-believer's characteristic vice — the assumption that his own understanding of the game is complete, that nothing truly exceeds his grasp. He understood the diary as a tool within his frame; the possibility that it might be something entirely outside that frame (a Horcrux, a fragment of soul) was literally unthinkable to him.
+    - The collapse upon contact with the Real: Lucius's ideological structure — part sincere investment, part cynical management — functions only at a distance from Voldemort's actual presence. The fantasy ("the Dark Lord's return would restore our glory") sustains itself precisely because the Dark Lord is absent. When Voldemort actually returns (1995), the gap between fantasy and Real becomes unbearable: the Real Voldemort brings Cruciatus, Legilimency, occupation of Malfoy Manor, seizure of Lucius's wand (symbolic castration). Everything Lucius valued — dignity, autonomy, mastery — is stripped. The ideology promised jouissance; the Real delivers only pain.
+    - This is why Lucius is broken by the second war in a way he was not by the first: in the first war he was young enough and peripheral enough to sustain the fantasy. The second war forces direct encounter with what the ideology was always secretly organised around — a traumatic kernel (the master's jouissance) that the symbolic frame could not domesticate.
+
+- Case study: Draco Malfoy — inheriting the form without the content:
+  * Draco's relationship to blood purity ideology is structurally distinct from his father's, because what was transmitted to him was not the ideology's content (with its internal tensions, cynical qualifications, and experiential sediment) but only its form — the signifier without the signified.
+  * The mechanism of transmission failure:
+    - Ideology, especially in its "partial internalisation" mode, operates through what is not said. Lucius's relationship to blood purity is sustained by a complex of unstated qualifications, unacknowledged contradictions, and private reservations that he has never articulated to himself, let alone to his son. To articulate them would be to destroy them — the ideology's functioning depends on keeping certain things in the register of the unsaid.
+    - Lucius cannot "dump" his actual ideological position to Draco because that position exists partly in his unconscious — in the gap between what he says and what he does, between his stated beliefs and his actual conduct. What he can transmit is the explicit surface: "we are pure, we are superior, Mudbloods are beneath us." The discourse without the subtext.
+    - Draco therefore receives pure S1 — the Master Signifier in its most naked, unqualified form — without any of the experiential ballast that might give it nuance or strategic flexibility.
+  * The father's name and the snake-headed cane:
+    - Lucius's silver snake-headed walking cane functions as the concrete materialisation of the Nom-du-Père (Name-of-the-Father) in this structure. It is not merely an accessory but the physical signifier of paternal authority — the thing Draco sees when he sees "father" and "power" and "the law." The cane contains the concealed wand: law and force unified in a single phallic object.
+    - Draco's identification is not primarily with blood purity as such but with the authority that speaks blood purity — with the father who says it. He repeats "my father will hear about this" not as political strategy but as invocation: calling upon the Name-of-the-Father to guarantee his position in the symbolic order. The content of what father believes is less important than the fact that father believes (or appears to believe) it.
+    - This is why Draco's blood purity rhetoric is simultaneously aggressive and hollow: he performs conviction (loudly, publicly, often at inappropriate moments) because the performance is aimed not at Muggle-borns but at the paternal gaze. He is trying to be recognised as a worthy bearer of the Name.
+  * The behavioural contrast with Lucius:
+    - Lucius knows when to deploy S1 and when to keep it sheathed — because his relationship to the ideology includes its strategic-silent dimension. He sneers at Arthur Weasley (safe target, lower-status pureblood); he humiliates Hermione in Flourish and Blotts (Muggle-born child, no political cost). But he is careful around second-year Harry Potter — the Boy Who Lived, politically untouchable, whose symbolic capital exceeds his own in that moment. Lucius's ideology includes a map of power: he knows where the signifier has force and where it doesn't.
+    - Draco has no such map. He received "pure blood = superior" as a flat universal proposition, without the unspoken qualifications ("…but not in front of Dumbledore," "…but not when the other side has more institutional weight"). So he insults Hagrid in class, provokes Buckbeak, calls Hermione "Mudblood" in front of the entire Quidditch pitch, and antagonises Harry from day one. Every deployment is undifferentiated because no strategic layer was ever transmitted.
+    - This is not stupidity — it is a structural effect of ideological inheritance. The father's savoir-faire (knowing-how-to-do) is precisely the part of ideology that cannot be stated explicitly. It exists as practical sense, accumulated through decades of navigating actual power relations. It is transmitted (if at all) through long apprenticeship, not through maxims. Draco got the maxims without the apprenticeship.
+  * The crisis (sixth year):
+    - When Lucius falls — imprisoned, humiliated, stripped of his wand (= his cane, = the phallic signifier) — Draco's symbolic order collapses. The Name-of-the-Father no longer guarantees anything. The ideology he inherited as pure form, without understanding its content or its limits, offers him no resources for navigating the situation.
+    - Voldemort's task (kill Dumbledore) confronts Draco with the Real that his father's ideology was supposed to manage — and he discovers he has no apparatus for managing it. He cannot be a true believer (he was never taught the content of belief), cannot be a cynic (he has no alternative framework), and cannot defect (the Name still binds him even in the father's absence).
+    - Draco's failure to kill Dumbledore is not moral awakening — it is ideological paralysis. The subject formed entirely by the paternal signifier discovers, at the moment of testing, that the signifier was empty all along.
+
+[Ideological apparatus / 意识形态国家机器]
+
+- Repressive State Apparatus (RSA) vs Ideological State Apparatus (ISA):
+  * RSA: The Ministry of Magic (Auror Office, Magical Law Enforcement, Improper Use of Magic Office, the Trace) enforces compliance through direct coercion. The Statute of Secrecy is the RSA's founding law.
+  * ISA: Slytherin House, pureblood families, and the Daily Prophet reproduce the ideology without overt violence. The ISA's function is to produce subjects who do not need to be coerced — who have already internalized the symbolic order as "the way things are."
+
+- Slytherin House as ISA:
+  * Slytherin is not merely a school dormitory — it is a seven-year ideological formation programme for the ruling class and those who aspire to join it. Its function is to take children who arrive with inherited dispositions (pureblood habitus, family wealth, network connections) and transform those raw materials into class-conscious political subjects who recognise one another, share unspoken codes, and understand how power operates in the wizarding world.
+  * The common room beneath the lake, the Slytherin alumni network, the house's internal hierarchy of older students mentoring younger ones — these are not incidental. They produce solidarity, loyalty, and mutual recognition among the future ruling stratum. A Malfoy and a Nott who share a dormitory for seven years do not merely become friends; they become co-members of a class that knows itself as a class.
+  * "Ambition" and "cunning" — the House's official virtues — are ideological redescriptions of aristocratic statecraft. The terms sound meritocratic (anyone can be ambitious), but the content taught in Slytherin is specifically the knowledge of how to navigate a system built for inherited privilege: patronage, alliance, discretion, the conversion of social capital into political power.
+  * Slytherin also performs a co-optation function: the rare half-blood or Muggle-born sorted there (Snape, Voldemort) is offered conditional admission to the ruling order on its own terms. Their presence proves the system is "open" while their extreme rarity proves it is not. The price of admission is total identification with the aristocratic value system and disavowal of one's origin.
+  * The house rivalry structure (Slytherin vs Gryffindor especially) serves an additional ideological function: it stages political conflict as inter-house sport, displacing structural antagonism (class) onto institutional antagonism (house loyalty). Students learn to think in terms of Slytherin-vs-Gryffindor rather than aristocracy-vs-everyone-else.
+
+- Pureblood family as ISA:
+  * The family is the primary site of ideological reproduction. Before a child ever reaches Hogwarts, the pureblood family has already transmitted: habitus (accent, manners, bodily hexis), social knowledge (who matters, how alliances work, which families are "ours"), economic orientation (inherited wealth as natural, patronage as how-things-are-done), and — crucially — the Master Signifier itself ("we are pure").
+  * A Malfoy arrives at Hogwarts already knowing how to navigate power; a Muggle-born arrives knowing nothing. This gap is not overcome by seven years of identical education — because the habitus was never part of the formal curriculum.
+  * The "blood traitor" label (applied to families like the Weasleys) is the ISA's disciplinary mechanism from within: it marks those who refuse to reproduce the ideology at the family level, threatening them with symbolic exile from their own class position. The Weasleys retain pureblood status in name but are stripped of its social benefits — a warning to others.
+  * Disinheritance (Sirius Black burned off the tapestry, Andromeda Black's erasure) is the family-ISA's ultimate sanction: not legal punishment but symbolic death, expulsion from the signifying chain.
+
+- The Daily Prophet as ISA:
+  * The Prophet constructs the horizon of thinkable politics. During peacetime it reinforces institutional legitimacy through tone (deference to Ministry authority, mockery of dissent). During crisis (1995–97) it functions as explicit propaganda — but the shift is one of degree, not kind.
+  * The Prophet never questions the Statute, never frames pureblood privilege as a structural issue, never imports Muggle political concepts as analytical tools. Its silence on these matters is its ideological function.
+
+[Marriage and reproduction / 联姻]
+
+- Marriage between pureblood houses serves as alliance-building, wealth consolidation, and status maintenance. Marrying a Muggle-born or half-blood does not trigger formal legal penalty but results in social ostracism, disinheritance by family custom, and loss of network access.
+- The biological cost (inbreeding, declining fertility in the most insular lines) is a known but unspoken problem that the ideology cannot acknowledge.
+
+[Non-human species under this legal order / 非人种族的法律地位]
+
+- The same legal framework that subordinates Muggle-borns explicitly excludes non-human magical beings from legal personhood:
+  * House-elves: classified as property under the Statute of Domestic Service (medieval origin, never repealed). Their bonded status is framed as "traditional magical symbiosis." Emancipation requires the owner's voluntary act — the elf has no legal standing to petition.
+  * Goblins: recognised as a "sovereign allied nation" in treaty (the Gringotts Accords), but denied wand rights, Wizengamot representation, and land ownership. Their financial power exists in a legal grey zone that the Ministry tolerates only because goblin rebellion is costlier than accommodation.
+  * Centaurs: self-governing by treaty ("Being" status refused by choice), but their territorial rights are unilaterally redefined by Ministry decree when convenient (Forbidden Forest boundaries).
+  * Werewolves: legal personhood contingent on registration and compliance. Non-compliance results in classification as "Beast" — loss of all legal protections.
+- The aristocracy's relationship with non-human species mirrors colonial logic: formal legal frameworks that appear neutral but structurally guarantee wizard (and specifically pureblood wizard) supremacy over all other magical beings.
+
+[Structural resilience / 制度韧性]
+
+- This system has survived for three centuries because:
+  * The Statute's protective function is real — removing it would genuinely endanger wizardkind. This makes systemic critique appear reckless.
+  * The aristocracy co-opts enough talented outsiders to defuse revolutionary pressure.
+  * The wizarding world's tiny population (~30,000 in Britain) makes personal relationships more important than formal institutions — and personal relationships favour incumbents.
+  * No external force (Muggle government, international body) can exert pressure because the Statute prevents contact.
+  * Post-Voldemort reforms (1998–) addressed the most egregious symptoms (blood status persecution) without touching structural causes (wealth concentration, Wizengamot composition, patronage networks).
+</addon>
+"""
