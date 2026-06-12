@@ -11,152 +11,43 @@
  * 5. Push final SimulatorMessage to store
  */
 
-import { resolve, relative } from 'path'
-import { readdirSync, statSync, readFileSync } from 'node:fs'
 import type { AppConfig } from '../config'
 import { resolveApi } from '../config'
 import type { SimulatorMessage, Message, ToolInteraction } from '../chat_message'
-import type { ChatMessage, ToolCall, ToolDefinition } from './client'
+import type { ChatMessage, ToolCall } from './client'
 import { streamCompletion, completion } from './client'
 import {
     buildSimulationRequest,
     buildStatusBarUpdateRequest,
     buildMemoryCompressRequest,
-    splitSimulatorOutput,
 } from './context'
 import { computePreciseMemoryInUse } from './prompt_builder'
-import { getActiveAddons, showQuestion, setToolCallLog } from '../store'
+import { TOOLS, executeRead, executeGlob, extractKeyArgument } from './tools'
+import type { AdditionalCHR } from './chr_file'
 
-// ── Tool definitions ──
-
-const ASK_QUESTION_TOOL: ToolDefinition = {
-    type: 'function',
-    function: {
-        name: 'ask_question',
-        description: 'Ask the Conducting Department (user) a question for clarification before generating story content.',
-        parameters: {
-            type: 'object',
-            properties: {
-                prompt: {
-                    type: 'string',
-                    description: 'The question to ask the user.',
-                },
-                options: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    description: 'Optional list of suggested answers for the user to choose from.',
-                },
-            },
-            required: ['prompt'],
-        },
-    },
-}
-
-const READ_TOOL: ToolDefinition = {
-    type: 'function',
-    function: {
-        name: 'read',
-        description: 'Read the contents of a file or list the entries of a directory. The path must be within the current working directory.',
-        parameters: {
-            type: 'object',
-            properties: {
-                path: {
-                    type: 'string',
-                    description: 'Relative or absolute path to the file or directory to read.',
-                },
-            },
-            required: ['path'],
-        },
-    },
-}
-
-const GLOB_TOOL: ToolDefinition = {
-    type: 'function',
-    function: {
-        name: 'glob',
-        description: 'Find files matching a glob pattern within the current working directory. Returns a list of matching file paths.',
-        parameters: {
-            type: 'object',
-            properties: {
-                pattern: {
-                    type: 'string',
-                    description: 'Glob pattern to match files (e.g. "**/*.ts", "src/**/*.md").',
-                },
-            },
-            required: ['pattern'],
-        },
-    },
-}
-
-const TOOLS: ToolDefinition[] = [ASK_QUESTION_TOOL, READ_TOOL, GLOB_TOOL]
+// ── Split utility ──
 
 /**
- * Execute the read tool. Returns the file content or directory listing.
- * Rejects paths outside process.cwd().
+ * Split raw simulator output on the SPLIT marker.
  */
-function executeRead(path: string): { success: boolean; result: string } {
-    const cwd = process.cwd()
-    const resolved = resolve(cwd, path)
-    const rel = relative(cwd, resolved)
-
-    // Reject paths that escape cwd
-    if (rel.startsWith('..') || resolve(resolved) !== resolved && rel.startsWith('..')) {
-        return { success: false, result: `Error: path "${path}" is outside the working directory.` }
+function splitSimulatorOutput(raw: string): { content: string; summarize: string } {
+    const parts = raw.split('------SPLIT------')
+    if (parts.length >= 2) {
+        return { content: parts[0]!.trim(), summarize: parts.slice(1).join('').trim() }
     }
-    // Extra check: resolved must start with cwd
-    if (!resolved.startsWith(cwd)) {
-        return { success: false, result: `Error: path "${path}" is outside the working directory.` }
-    }
-
-    try {
-        const stat = statSync(resolved)
-        if (stat.isDirectory()) {
-            const entries = readdirSync(resolved)
-            return { success: true, result: entries.join('\n') }
-        } else {
-            const content = readFileSync(resolved, 'utf-8')
-            return { success: true, result: content }
-        }
-    } catch (err) {
-        return { success: false, result: `Error: ${(err as Error).message}` }
-    }
+    return { content: raw.trim(), summarize: '' }
 }
 
-/**
- * Execute the glob tool. Returns matching file paths within cwd.
- */
-function executeGlob(pattern: string): { success: boolean; result: string } {
-    const cwd = process.cwd()
-    try {
-        const glob = new Bun.Glob(pattern)
-        const matches: string[] = []
-        for (const path of glob.scanSync({ cwd, dot: false })) {
-            matches.push(path)
-        }
-        if (matches.length === 0) {
-            return { success: true, result: '(no matches)' }
-        }
-        return { success: true, result: matches.join('\n') }
-    } catch (err) {
-        return { success: false, result: `Error: ${(err as Error).message}` }
-    }
-}
-
-/**
- * Extract the most important argument from a tool interaction for display purposes.
- */
-export function extractKeyArgument(interaction: ToolInteraction): string {
-    switch (interaction.$k) {
-        case 'ask_question': return interaction.prompt
-        case 'read': return interaction.path
-        case 'glob': return interaction.pattern
-    }
-}
+// ── Pipeline callbacks & types ──
 
 export interface PipelineCallbacks {
     onStreamingDelta: (accumulated: string) => void
     onWorkStatus: (status: import('../chat_message').WorkStatus) => void
     onError: (stage: string, error: Error) => void
+    /** Called when the LLM invokes ask_question and needs user input. */
+    onRequestUserInput: (prompt: string, options: string[]) => Promise<string>
+    /** Called to append a tool call log entry for UI display. */
+    onToolCallLog: (entry: string) => void
 }
 
 export interface PipelineResult {
@@ -177,10 +68,7 @@ export async function executePipeline(
     // ── Stage 1: Simulator streaming with tool call loop ──
     callbacks.onWorkStatus({ $k: 'waiting' })
 
-    // Use active addons (respecting enable/disable and order)
-    const effectiveConfig: AppConfig = { ...config, additionalCHRs: getActiveAddons() }
-
-    const simRequest = buildSimulationRequest(effectiveConfig, messages, userInstruction)
+    const simRequest = buildSimulationRequest(config, messages, userInstruction)
     // Attach tools to the request
     simRequest.tools = TOOLS
 
@@ -195,7 +83,7 @@ export async function executePipeline(
     const toolInteractions: ToolInteraction[] = []
 
     // Clear tool call log at start
-    setToolCallLog([])
+    callbacks.onToolCallLog('')  // Signal start (empty = clear if needed by caller)
 
     // Multi-turn messages for tool call loop (starts with the original request messages)
     let turnMessages: ChatMessage[] = [...simRequest.messages]
@@ -255,16 +143,14 @@ export async function executePipeline(
                 }
 
                 const options = args.options ?? []
-                const answer = await showQuestion(args.prompt, options)
+                const answer = await callbacks.onRequestUserInput(args.prompt, options)
 
                 const interaction: ToolInteraction = { $k: 'ask_question', success: true, prompt: args.prompt, options, answer }
                 toolInteractions.push(interaction)
 
-                // Log tool call in streaming bubble
                 const keyArg = extractKeyArgument(interaction)
-                setToolCallLog(prev => [...prev, `⚙ tool call: tool=ask_question, arguments="${keyArg}", result=success`])
+                callbacks.onToolCallLog(`⚙ tool call: tool=ask_question, arguments="${keyArg}", result=success`)
 
-                // Append tool result message
                 turnMessages = [...turnMessages, {
                     role: 'tool',
                     content: answer,
@@ -284,7 +170,7 @@ export async function executePipeline(
                 toolInteractions.push(interaction)
 
                 const keyArg = extractKeyArgument(interaction)
-                setToolCallLog(prev => [...prev, `⚙ tool call: tool=read, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
+                callbacks.onToolCallLog(`⚙ tool call: tool=read, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`)
 
                 turnMessages = [...turnMessages, {
                     role: 'tool',
@@ -305,7 +191,7 @@ export async function executePipeline(
                 toolInteractions.push(interaction)
 
                 const keyArg = extractKeyArgument(interaction)
-                setToolCallLog(prev => [...prev, `⚙ tool call: tool=glob, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`])
+                callbacks.onToolCallLog(`⚙ tool call: tool=glob, arguments="${keyArg}", result=${success ? 'success' : 'fail'}`)
 
                 turnMessages = [...turnMessages, {
                     role: 'tool',
@@ -314,7 +200,7 @@ export async function executePipeline(
                 }]
             } else {
                 // Unknown tool — return error
-                setToolCallLog(prev => [...prev, `⚙ tool call: tool=${toolCall.function.name}, arguments="${toolCall.function.arguments}", result=fail`])
+                callbacks.onToolCallLog(`⚙ tool call: tool=${toolCall.function.name}, arguments="${toolCall.function.arguments}", result=fail`)
                 turnMessages = [...turnMessages, {
                     role: 'tool',
                     content: `Error: unknown tool "${toolCall.function.name}"`,
@@ -335,10 +221,11 @@ export async function executePipeline(
     // ── Stage 2: Status bar update ──
     callbacks.onWorkStatus({ $k: 'status-bar' })
 
-    const statusBarRequest = buildStatusBarUpdateRequest(effectiveConfig, messages, userInstruction, simulatorContent, toolInteractions.length > 0 ? toolInteractions : undefined)
+    const statusBarRequest = buildStatusBarUpdateRequest(config, messages, userInstruction, simulatorContent, toolInteractions.length > 0 ? toolInteractions : undefined)
     const statusBarApi = resolveApi(config, 'statusBar')
 
     let statusBar = (messages.findLast(m => m.$k === 'simulator') as SimulatorMessage | undefined)?.statusBar ?? ''
+
     try {
         const statusResult = await completion(statusBarApi, statusBarRequest, signal)
         statusBar = statusResult.content
@@ -367,14 +254,13 @@ export async function executePipeline(
     }
 
     // ── Stage 3: Memory compression (if needed) ──
-    // Check after adding the new message
     const messagesWithNew = [...messages, { $k: 'player' as const, content: userInstruction }, simMsg]
     const activeLines = computePreciseMemoryInUse(messagesWithNew)
 
     if (activeLines.length > config.preciseMemoryLimit) {
         callbacks.onWorkStatus({ $k: 'compressing' })
 
-        const compressRequest = buildMemoryCompressRequest(effectiveConfig, messagesWithNew, config.compressPerTime)
+        const compressRequest = buildMemoryCompressRequest(config, messagesWithNew, config.compressPerTime)
         const memoryApi = resolveApi(config, 'memory')
 
         try {

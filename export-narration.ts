@@ -9,17 +9,18 @@
 import { basename } from 'path'
 import type { SessionFile } from './src/session'
 import type { ToolInteraction } from './src/chat_message'
-import { extractKeyArgument } from './src/llm/pipeline'
-import { extractToolKeyResult } from './src/llm/prompt_builder'
+import { extractKeyArgument, extractKeyResult } from './src/llm/tools'
 
 function formatToolInteraction(tool: ToolInteraction): string {
     const args = extractKeyArgument(tool)
-    const result = extractToolKeyResult(tool)
+    const result = extractKeyResult(tool)
     return `  <tool tool-id="${tool.$k}">\n    <arguments>\n${args}\n    </arguments>\n    <result>\n${result}\n    </result>\n  </tool>`
 }
 
 function exportNarration(session: SessionFile): string {
     const lines: string[] = ['<session>']
+
+    lines.push(`<simulator>${session.simulatorPath}</simulator>`)
 
     // Addon list
     if (session.addons && session.addons.length > 0) {

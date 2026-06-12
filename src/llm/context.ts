@@ -16,7 +16,6 @@ import {
     computePreciseMemoryInUse,
     sliceInlineMessages,
 } from './prompt_builder'
-
 /**
  * Build the main simulator request (streaming).
  */
@@ -115,15 +114,4 @@ export function buildMemoryCompressRequest(
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
     ], { stream: false, maxTokens: 4096 })
-}
-
-/**
- * Split raw simulator output on the SPLIT marker.
- */
-export function splitSimulatorOutput(raw: string): { content: string; summarize: string } {
-    const parts = raw.split('------SPLIT------')
-    if (parts.length >= 2) {
-        return { content: parts[0]!.trim(), summarize: parts.slice(1).join('').trim() }
-    }
-    return { content: raw.trim(), summarize: '' }
 }

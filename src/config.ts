@@ -9,8 +9,8 @@
  * - addon CHR(s): optional TOML overlays (same format as mangekyou-web additional CHRs)
  */
 
-import { parse as parseToml } from 'smol-toml'
 import type { SimulatorCHR, AdditionalCHR } from './llm/chr_file'
+import { readTomlFile } from './utils'
 
 export interface LLMConfig {
     model: string
@@ -138,15 +138,6 @@ export function parseCliArgs(argv: string[]): CliArgs {
 
 // ── File Loading ──
 
-async function readTomlFile(filePath: string): Promise<Record<string, any>> {
-    const file = Bun.file(filePath)
-    if (!(await file.exists())) {
-        throw new Error(`File not found: ${filePath}`)
-    }
-    const text = await file.text()
-    return parseToml(text) as Record<string, any>
-}
-
 /**
  * Load the full AppConfig from CLI-specified files.
  */
@@ -155,7 +146,7 @@ export async function loadConfig(args: CliArgs): Promise<AppConfig> {
     let rawConfig: RawConfigToml = {}
     const configFile = Bun.file(args.configPath)
     if (await configFile.exists()) {
-        rawConfig = parseToml(await configFile.text()) as RawConfigToml
+        rawConfig = await readTomlFile(args.configPath) as RawConfigToml
     }
 
     // 2. Load simulator CHR

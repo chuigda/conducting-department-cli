@@ -13,6 +13,7 @@ import { join } from 'path'
 import type { SimulatorCHR, AdditionalCHR, LanguageSelector } from './chr_file'
 import { LanguageConfigs } from './chr_file'
 import type { Message, SimulatorMessage, ToolInteraction } from '../chat_message'
+import { extractKeyArgument, extractKeyResult } from './tools'
 
 // ── Template Loading ──
 
@@ -71,25 +72,9 @@ function sanitize(s?: string): string {
 
 /** Format a ToolInteraction as XML for inclusion in prompts */
 function formatToolInteractionXml(ti: ToolInteraction): string {
-    const keyArg = extractToolKeyArgument(ti)
-    const keyResult = extractToolKeyResult(ti)
+    const keyArg = extractKeyArgument(ti)
+    const keyResult = extractKeyResult(ti)
     return `  <tool-call tool="${ti.$k}">\n    <arguments>${keyArg}</arguments>\n    <result>${keyResult}</result>\n  </tool-call>\n`
-}
-
-function extractToolKeyArgument(ti: ToolInteraction): string {
-    switch (ti.$k) {
-        case 'ask_question': return ti.prompt
-        case 'read': return ti.path
-        case 'glob': return ti.pattern
-    }
-}
-
-export function extractToolKeyResult(ti: ToolInteraction): string {
-    switch (ti.$k) {
-        case 'ask_question': return ti.answer
-        case 'read': return ti.success ? ti.result : `Error: ${ti.result}`
-        case 'glob': return ti.success ? ti.result : `Error: ${ti.result}`
-    }
 }
 
 /** Ensure string has leading and trailing newline for inline numbered lists */

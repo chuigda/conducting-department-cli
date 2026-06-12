@@ -11,7 +11,7 @@
 import { resolve } from 'path'
 import type { Message } from './chat_message'
 import type { AppConfig, ApiEndpoint, LLMConfig } from './config'
-import type { AddonEntry } from './store'
+import type { AdditionalCHR } from './llm/chr_file'
 
 // ── Save file schema ──
 
@@ -44,10 +44,16 @@ export interface SessionConfig {
 
 // ── Save ──
 
+export interface AddonSaveEntry {
+    chr: AdditionalCHR
+    path: string
+    enabled: boolean
+}
+
 export interface SaveInput {
     config: AppConfig
     messages: Message[]
-    addons: AddonEntry[]
+    addons: AddonSaveEntry[]
     simulatorPath: string
 }
 

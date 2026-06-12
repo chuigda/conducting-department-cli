@@ -8,15 +8,7 @@ import { initStore, messages, addons, initSessionContext, getSessionContext } fr
 import { ensureTemplates } from "./src/llm/prompt_builder"
 import { loadSessionFile, buildSessionFile } from "./src/session"
 import type { AdditionalCHR } from "./src/llm/chr_file"
-import { parse as parseToml } from 'smol-toml'
-
-async function readTomlFile(filePath: string): Promise<Record<string, any>> {
-    const file = Bun.file(filePath)
-    if (!(await file.exists())) {
-        throw new Error(`File not found: ${filePath}`)
-    }
-    return parseToml(await file.text()) as Record<string, any>
-}
+import { readTomlFile } from "./src/utils"
 
 async function main() {
     // Parse CLI args (skip first two: bun executable + script path)
