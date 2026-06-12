@@ -8,7 +8,7 @@
  * - All messages
  */
 
-import { resolve } from 'path'
+import { resolve, relative } from 'path'
 import type { Message } from './chat_message'
 import type { AppConfig, ApiEndpoint, LLMConfig } from './config'
 import type { AdditionalCHR } from './llm/chr_file'
@@ -58,17 +58,17 @@ export interface SaveInput {
 }
 
 export function buildSessionFile(input: SaveInput): SessionFile {
-    const absSimulatorPath = resolve(input.simulatorPath)
+    const relSimulatorPath = relative(process.cwd(), resolve(input.simulatorPath))
 
     const addons: SessionAddon[] = input.addons.map(entry => ({
-        path: entry.path,
+        path: relative(process.cwd(), resolve(entry.path)),
         enabled: entry.enabled,
     }))
 
     return {
         version: 1,
         savedAt: new Date().toISOString(),
-        simulatorPath: absSimulatorPath,
+        simulatorPath: relSimulatorPath,
         addons,
         config: {
             api: input.config.api,
