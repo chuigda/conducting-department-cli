@@ -113,7 +113,7 @@ export function ChatBubble(props: ChatBubbleProps) {
                     {(interaction) => (
                         <text
                             fg={dimmed}
-                            content={`⚙ tool call: tool=${interaction.$k}, arguments="${extractBubbleKeyArg(interaction)}", result=${interaction.success ? 'success' : 'fail'}`}
+                            content={`⚙  tool call: tool=${interaction.$k}, arguments="${extractBubbleKeyArg(interaction)}", result=${interaction.success ? 'success' : 'fail'}`}
                         />
                     )}
                 </For>
