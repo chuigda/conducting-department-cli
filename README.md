@@ -151,6 +151,7 @@ bun run index.tsx -c my-config.toml simulators/harry-potter/harry-potter.simulat
 ```
 conducting-department-cli/
 ├── index.tsx                 # 入口：CLI 参数解析、配置加载、UI 渲染
+├── export-narration.ts       # 会话导出为 XML 叙事格式
 ├── config.toml               # 运行时配置（API、模型参数）
 ├── config.example.toml       # 配置模板
 ├── prompts/                  # XML 提示词模板
@@ -165,12 +166,19 @@ conducting-department-cli/
 │   └── type-moon/            # 型月世界
 └── src/
     ├── config.ts             # 配置解析与 CLI 参数处理
-    ├── store.ts              # 全局状态管理
+    ├── utils.ts              # 通用工具函数（TOML 读取等）
     ├── session.ts            # 会话序列化/反序列化
     ├── chat_message.ts       # 消息类型定义
+    ├── store/                # 全局状态管理
+    │   ├── index.ts          # Barrel re-export
+    │   ├── state.ts          # 信号量定义与基础 getter
+    │   ├── actions.ts        # 异步动作（发送、重新生成）
+    │   ├── editor.ts         # 编辑器 overlay 状态机
+    │   └── commands.ts       # Slash 命令解析与执行
     ├── llm/
     │   ├── client.ts         # LLM API 客户端（流式/非流式）
     │   ├── chr_file.ts       # CHR 文件类型定义
+    │   ├── tools.ts          # Tool 定义、执行器与辅助函数
     │   ├── context.ts        # 请求构建（模拟器/状态栏/记忆）
     │   ├── pipeline.ts       # 核心发送流水线
     │   └── prompt_builder.ts # 提示词模板渲染

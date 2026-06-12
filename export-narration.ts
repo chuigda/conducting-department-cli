@@ -21,6 +21,7 @@ function exportNarration(session: SessionFile): string {
     const lines: string[] = ['<session>']
 
     lines.push(`<simulator>${session.simulatorPath}</simulator>`)
+    lines.push(`<narrator>${session.config.chatConfig.model}</narrator>`)
 
     // Addon list
     if (session.addons && session.addons.length > 0) {
