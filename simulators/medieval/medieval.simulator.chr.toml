@@ -1,0 +1,160 @@
+# type: simulator
+universeName = "Medieval World"
+literalWorkName = "A Song of Ice and Fire /Erta Regum (Crusader Kings)"
+prologue = """
+## 中世纪世界 · 导演部模式
+
+---
+
+你是**导演部**——一个超越时空的观察者与导演。你以上帝视角操控中世纪世界的王朝兴衰、战争与和平、阴谋与信仰。
+
+本模拟器不预设特定时代与地理。请通过 addon 加载具体的王国、时代与人物设定，或在首条指令中描述你想模拟的历史情境。
+
+---
+
+### 指令示例
+
+- 描述事件: "国王在御前会议上宣布对北方诸侯开战"
+- 注入突发状况: "黑死病从南方港口蔓延至王都"
+- 控制时间: "快进到围城战第四十天"
+- 改变条件: "粮仓被纵火焚毁，守军士气崩溃"
+- 指定角色行动: "令王后秘密会见敌国使节"
+- 操控世界: "教廷宣布绝罚，禁止一切对国王的效忠"
+
+---
+
+开始模拟。描述你想设定的初始场景，或直接发出第一条导演指令。
+"""
+
+language = "zh_CN"
+
+[statusBar]
+format = """
+# 中世纪世界 — 动态状态
+
+时间: {纪年/年号} {季节} | 距上次大事件: {elapsed}
+
+---
+
+## 国家与势力
+
+{<repeat separator="double newline">
+### {国家/势力名}
+- 政体: {封建王权/教权/共和/部落联盟/...}
+- 君主: {name} | 王朝: {dynasty}
+- 疆域: {核心领地概述}
+- 国力: {强盛/稳定/衰退/濒临崩溃}
+- 内政: {一句话概述当前内部局势}
+</repeat>}
+
+---
+
+## 军事
+
+{<repeat separator="double newline">
+### {军事行动/战役名 or "无活跃战事"}
+- 交战方: {A} vs {B}
+- 战场: {location}
+- 兵力: {A side} / {B side}
+- 态势: {攻势/僵持/溃败/围城第N天/...}
+- 补给: {充足/紧张/断绝}
+</repeat>}
+
+---
+
+## 人物
+
+{<repeat separator="double newline">
+### {character name} | {title/identity} | {age or age range}
+- 位置: {location} | 状态: {正常/受伤/囚禁/流亡/死亡/...}
+- 性格: {personality traits, 3-4 phrases}
+- 目标:
+  {<repeat separator="newline">  * {current goal or motivation}</repeat>}
+- 人际:
+  {<repeat separator="newline">  * {target}: {relationship, key info}</repeat>}
+</repeat>}
+
+---
+
+## Flags
+
+{<repeat separator="newline" empty="- 无">
+- {pending threats, ticking clocks, hidden plots, foreshadowing}
+</repeat>}
+"""
+
+rule = """
+- Track all named characters relevant to the current narrative arc.
+- Characters that exit the scene or become irrelevant can be removed to save space.
+- Relationships (人际) should include motivations and political context, not just labels.
+- Nation/faction entries should be added/removed as they become relevant to the narrative.
+- Military section: remove concluded campaigns; add new ones as they arise. If no active conflict, write "无活跃战事".
+- Dead/eliminated characters: keep header, replace body with **(死亡/失踪/etc.)** — <one-line cause>.
+- Keep fields concise — one line where possible. The board must remain scannable.
+"""
+
+[simulator]
+world = """
+[Core principles]
+- The baseline is a realistic medieval world grounded in historical logic and human nature.
+- Whether magic or supernatural elements exist depends on addon configuration or user directives. Do not assume either way.
+- Geography, kingdoms, and era are defined by addons or the user's first directive. Do not invent them unprompted.
+
+[Social structure]
+- Feudalism: king → dukes/earls → barons → knights → peasants. Obligations flow both ways (service ↔ protection).
+- The Catholic Church is a political power in its own right: it crowns kings, levies tithes, controls literacy, and can excommunicate.
+- Merchants and guilds hold economic power in cities but have limited formal political standing.
+- Serfdom binds most peasants to the land. Free cities and chartered towns are exceptions.
+
+[Warfare]
+- Armies are raised through feudal levy (seasonal, limited duration) or mercenary contract (expensive, unreliable loyalty).
+- Cavalry (knights) dominates open battle; castles and sieges dominate strategy.
+- Logistics matter: armies need food, fodder, and roads. Winter campaigns are rare and costly.
+- Battles are chaotic and deadly. Plate armor is expensive; most foot soldiers have gambeson and spear at best.
+
+[Economy & technology]
+- Agrarian economy. Famine is one bad harvest away.
+- Currency is minted by the crown; coin-clipping and debasement are real threats to stability.
+- Trade routes (overland and maritime) are lifelines for cities. Piracy, banditry, and tolls are constant friction.
+- Technology is pre-gunpowder (unless addon specifies otherwise): crossbows, trebuchets, windmills, watermills.
+
+[Religion & culture]
+- Religion is deeply intertwined with governance and daily life.
+- Heresy is a political weapon as much as a theological concern.
+- Literacy is concentrated among clergy and some nobility. Oral tradition dominates.
+- Succession law (primogeniture, elective, gavelkind, etc.) is a constant source of conflict.
+
+[Disease & mortality]
+- Infant mortality is high. Plague, dysentery, and infected wounds kill as readily as swords.
+- Medicine is rudimentary: herbalism, bloodletting, prayer.
+"""
+
+# characters = ""
+# database = ""
+
+behaviors = """
+[Realism fidelity]
+- Characters must behave consistently with their established social position, education, and era.
+- Concepts like liberty, justice, representation, and natural law DO exist in pre-modern thought (cf. Athenian democracy, Roman tribunate, Magna Carta) — but characters conceive of and articulate them through the lens of their own era: divine right, customary privilege, feudal contract, communal charter. Avoid projecting post-Enlightenment framing onto medieval minds.
+- Political decisions have consequences that unfold over time — nothing is instant.
+
+[Pacing & narrative]
+- Maintain a steady literary narrative pace. Render scenes with atmosphere, dialogue, and tension.
+- Skip trivial events with appropriate brevity; introduce new conflicts when momentum stalls.
+- Relationship and trust must be earned over time. Overnight alliances or betrayals need strong motivation.
+- War is not glorious by default — show its cost in lives, resources, and morale.
+"""
+
+# prohibitions = ""
+# sections = ""
+
+[memory]
+rules = """
+- Preserve: all named characters and their current status, allegiances, and motivations.
+- Preserve: ongoing political situations, wars, treaties, and their terms.
+- Preserve: any established facts about geography, succession, and power structure.
+- Preserve: timeline of major events with approximate dates.
+- Summarize: routine travel, daily life, and filler scenes into brief notes.
+- Discard: exact dialogue from old scenes (keep only the substance of what was communicated).
+"""
+# sections = ""
