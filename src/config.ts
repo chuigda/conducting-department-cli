@@ -14,8 +14,8 @@ import { readTomlFile } from './utils'
 
 export interface LLMConfig {
     model: string
-    temperature: number
-    topP: number
+    temperature?: number
+    topP?: number
     presencePenalty: number
     frequencyPenalty: number
 }
@@ -58,8 +58,6 @@ export interface AppConfig {
 function defaultLLMConfig(): LLMConfig {
     return {
         model: 'claude-sonnet-4-20250514',
-        temperature: 0.6,
-        topP: 1,
         presencePenalty: 0,
         frequencyPenalty: 0,
     }
@@ -68,8 +66,6 @@ function defaultLLMConfig(): LLMConfig {
 function defaultLightweightLLMConfig(): LLMConfig {
     return {
         model: 'gemini-2.5-flash',
-        temperature: 0.05,
-        topP: 1,
         presencePenalty: 0,
         frequencyPenalty: 0,
     }
