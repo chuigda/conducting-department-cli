@@ -5,7 +5,7 @@ name = "Saramouche | 散兵 | 流浪者"
 
 [simulator]
 characters = """
-<character type="extra,servant" addon="saramouche">
+<character type="extra,servant" id="saramouche">
   <!-- Basic information -->
   True Name: 散兵 (スカラムーシュ)
   Class: Caster
