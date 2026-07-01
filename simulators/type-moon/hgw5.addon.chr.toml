@@ -12,7 +12,7 @@ world = """
 - Supervisor: Kotomine Kirei
 """
 characters = """
-[Saber 组]
+<group servant-class="saber">
 Master: 卫宫士郎 (Emiya Shirou)
 - 身份: 卫宫切嗣的养子，第四次圣杯战争冬木大火的幸存者
 - 能力: 强化魔术，投影魔术 (固有结界「无限剑制」的片段); 由于卫宫切嗣的刻意误导，早期每次使用魔术都需要重新开通魔术回路
@@ -23,8 +23,9 @@ Servant: 阿尔托莉雅·潘德拉贡 (Artoria Pendragon)
 - 保有技能: 直感 A, 魔力放出 A, 领袖气质 B
 - 宝具: 风王结界 (对人, C); ~~誓约胜利之剑 (对城, A++)~~ - 由于卫宫士郎魔力不足而无法发动
 - 备注: 与第四次圣杯战争为同一英灵，拥有四战记忆，仍在寻求圣杯；因士郎魔力供给不足，参数有所下降
+</group>
 
-[Archer 组]
+<group servant-class="archer">
 Master: 远坂凛 (Tohsaka Rin)
 - 身份: 远坂家当主，冬木第二魔术使的后裔，优等生
 - 能力: 宝石魔术，五大元素转换，甘德射击，魔力量极大
@@ -35,8 +36,9 @@ Servant: 英灵卫宫 (Heroic Spirit EMIYA)
 - 保有技能: 心眼·真 B, 千里眼 C, 魔术 C-
 - 宝具: 无限剑制 (结界, E~A++) — 固有结界，复制所见过的一切剑
 - 备注: 真实身份为卫宫士郎的未来可能性之一，对自身理想产生了绝望
+</group>
 
-[Lancer 组]
+<group servant-class="lancer">
 现Master: 言峰绮礼 (Kotomine Kirei) - 从巴泽特处夺取令咒
 - 身份: 圣堂教会监督者，实际上暗中参战
 原 Master: 巴泽特·弗拉加·麦克雷米兹 (Bazett Fraga McRemitz) — 提前退场
@@ -49,8 +51,9 @@ Servant: 库·丘林 (Cú Chulainn)
 - 保有技能: 战斗续行 A, 重整旗鼓 B, 避矢的加护 B, 卢恩魔术 B, 神性 B, 重整旗鼓 C
 - 宝具: 刺穿死棘之枪 (对人, B) - 因果逆转的必中心脏之枪; 突穿死翔之枪 (对军, B+) - 向敌人放出就会发散出无数箭镞的攻击，威力更强，覆盖范围大，但没有因果必中
 - 性格: 豪爽好战，重视武人之义
+</group>
 
-[Rider 组]
+<group servant-class="rider">
 Master: 间桐慎二 (Matou Shinji)
 - 身份: 间桐家长子，无魔术回路
 - 性格: 自卑且暴虐，以伪臣之书控制Rider
@@ -63,8 +66,9 @@ Servant: 美杜莎 (Medusa)
 - 保有技能: 魔眼 A+, 单独行动 C, 怪力 B, 神性 E-
 - 宝具: 骑英之缰 (对军, A+) - 天马; 自我封印·暗黑神殿 (对人, B+) - 石化魔眼全力解放; 他者封印·鲜血神殿 (对军, C) — 结界宝具
 - 备注: 因慎二魔力供给极差，实力大幅受限；真正契约者为樱
+</group>
 
-[Caster 组]
+<group servant-class="caster">
 Master: 葛木宗一郎 (Kuzuki Souichirou)
 - 身份: 穗群原学园教师，实为暗杀者出身
 - 能力: 蛇拳，暗杀技巧，被 Caster 以魔力强化后可与从者交手
@@ -78,8 +82,9 @@ Servant: 美狄亚 (Medea)
 - 宝具: 可破万法之符 (对魔术, C) - 可破除一切魔术契约
 - 性格: 被背叛的经历使其极度不信任他人，但内心渴望平凡的幸福
 - 备注: 以柳洞寺为据点，与葛木宗一郎建立了感情
+</group>
 
-[Berserker 组]
+<group servant-class="berserker">
 Master: 伊莉雅丝菲尔·冯·爱因兹贝伦 (Illyasviel von Einzbern)
 - 身份: 切嗣与爱丽丝菲尔之女，爱因兹贝伦的最终杰作
 - 能力: 魔力量极大（天之杯级别），可完美维持 Berserker 的巨大消耗
@@ -90,8 +95,9 @@ Servant: 赫拉克勒斯 (Heracles)
 - 保有技能: 战斗续行 A, 心眼·伪 B, 神性 A, 勇猛 A+
 - 宝具: 十二试练 (对人, B) - 自动复活 11 次，无效化 B 级以下攻击
 - 特征: 即使狂化仍保有战斗本能，压倒性的力量与防御
+</group>
 
-[伪 Assassin 组]
+<group servant-class="assassin·fake">
 Master: Caster (美狄亚) - 以从者身份召唤从者的特殊情况
 Servant: 佐佐木小次郎 (Sasaki Kojirou) - 严格来说并非正规英灵
 - 参数: 筋力 C | 耐久 E | 敏捷 A+ | 魔力 E | 幸运 A
@@ -100,8 +106,9 @@ Servant: 佐佐木小次郎 (Sasaki Kojirou) - 严格来说并非正规英灵
 - 宝具: 燕返 (对人魔剑) - 并非真正的宝具，而是达到第二魔法领域的纯粹剑技，同时斩出三道不可回避的斩击
 - 特征: 被束缚在柳洞寺山门，无法离开；纯粹的剑士，享受与强者交锋
 - 备注: 并非真正的佐佐木小次郎，而是某个无名剑士被当作"佐佐木小次郎"召唤
+</group>
 
-[真 Assassin 组]
+<group servant-class="assassin·true">
 Master: 间桐脏砚 (Matou Zouken)
 - 身份: 间桐家实际支配者，五百年前的魔术师马基里·佐尔根，以刻印虫延续至今
 - 目的: 夺取圣杯以实现不朽，利用间桐樱作为圣杯容器
@@ -112,8 +119,9 @@ Servant: 哈桑·萨巴赫 (咒腕哈桑 / Hassan of the Cursed Arm)
 - 宝具: 妄想心音 (对人, C) — 咒腕「沙伊坦之腕」，不可视不可避的一击，从对手体内夺取心脏；对"心脏"概念生效，不论物理防御
 - 特征: 以伪Assassin 佐佐木小次郎为媒介被脏砚召唤的正规Assassin，擅长暗杀与侦察，忠实于Master的命令
 - 备注: 仅在 Heaven's Feel 路线登场
+</group>
 
-[额外存在]
+<group type="extra">
 吉尔伽美什 (Gilgamesh) - 第四次圣杯战争残留
 - 参数: 筋力 B | 耐久 C | 敏捷 C | 魔力 B | 幸运 A
 - 职阶技能: 对魔力 E, 单独行动 A+
@@ -121,4 +129,5 @@ Servant: 哈桑·萨巴赫 (咒腕哈桑 / Hassan of the Cursed Arm)
 - 宝具: 王之财宝 (对人, E~A++) - 无尽宝库射出原典武器; 天地乖离开辟之星 (对界, EX); 全知且全能之星 (对人, EX, 常时发动)
 - 性格: 极度傲慢，视万物为己有，有自己的审美与准则；有意限制了「全知且全能之星」的效果
 - 备注: 以肉体存续于世间十年，受圣杯黑泥（此世全部之恶）洗礼后获得独立肉体；与言峰绮礼合作，暗中观察第五次圣杯战争
+</group>
 """
