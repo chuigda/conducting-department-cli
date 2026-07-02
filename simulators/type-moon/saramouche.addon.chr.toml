@@ -10,7 +10,7 @@ characters = """
   True Name: 散兵 (スカラムーシュ)
   Class: Caster
   Alignment: Lawful Evil
-  Parameters: Strength D | Endurance C | Agility A | Magical Power A | Luck E
+  Parameters: Strength D | Endurance C | Agility B | Magical Power A | Luck E
 
   <!-- class skills -->
   <skill id="item-construction" zh="道具作成" level="B">
@@ -28,7 +28,7 @@ characters = """
     将对象的身体当作「尚未完工的人偶」来重写其行动信号。
     但需要接触，且对魔力抗性高者无效。
   </skill>
-  <skill id="presence-concealment" zh="气息遮断" level="B">
+  <skill id="presence-concealment" zh="气息遮断" level="C">
     散兵的气息遮断已超越单纯的隐匿——
     他可以在完全暴露于人群之中的状态下，使自身的「从者气息」归零。
     让观测者的认知自动将他归类为「无害的路人」。
@@ -48,6 +48,7 @@ characters = """
     无人能将不同时期的他联系为同一个存在。
   </skill>
   <skill id="magecraft" zh="魔术" level="A">
+    熟练运用现代魔术的程度。
     擅长领域为风元素操作与雷元素操作，以及基于人偶术理的结界构筑。
     制造局部真空、压缩空气刃、或以气流偏转投射物。
     雷击虽不及宝具全力展开时的规模，但作为通常攻击手段已绰绰有余。
@@ -56,6 +57,14 @@ characters = """
     对西洋魔术、阴阳术、须弥学术院的虚空术理均有涉猎，
     虽非正统传承者，却能以自身的高规格灵基强行驱动他系术式。
     本人对此评价：「不过是看了几眼就会的东西，有什么值得炫耀的。」
+  </skill>
+  <skill id="divinity" zh="神性" level="E">
+    作为雷电将军亲手制造的人偶，一个本应容纳神之心的器，
+    散兵的灵基中残留着极为微弱的神性。
+    神之心早已不在，但容器上的刻印不会消失。
+    等级极低，是因为本人对此抱有彻底的拒绝态度。
+    他不认自己为神的造物，不认那份联系，不认任何来自雷神的馈赠。
+    「神性？别恶心我。那个女人丢掉的垃圾里沾了点神气，仅此而已。」
   </skill>
 
   <!-- noble phantasm -->
