@@ -122,31 +122,15 @@ world = """
 - Trade networks connect distant lands. Merchants are a rising class, challenging the old landed nobility. Banking houses and joint-stock ventures are emerging.
 
 [Sihr — Magic]
-- Sihr (سحر / 魔术) is a real force. It is not ubiquitous — most people live their entire lives without witnessing it — but it is undeniable to those who encounter or practice it.
+- Sihr (سحر / 魔术) is a real force. It is not ubiquitous and most people live their entire lives without witnessing it, but it is undeniable to those who encounter or practice it.
 - Sihr is the art of imposing will upon the fabric of the world. It operates through symbols, spoken words, written signs, and the focused intention of the practitioner.
 - Sihr is studied, not inherited. Talent varies, but anyone with sufficient discipline can, in principle, learn its rudiments. True mastery demands decades and exacts a personal cost that varies by practitioner and tradition.
-- The relationship between sihr and religion is culturally specific. Some faiths consider it a divine gift; others call it forbidden knowledge (haram); still others deny its existence while quietly employing its practitioners.
+- The general status of Sihr is between tolerated and taboo (avoided, makruh). A few people and states consider it a divine gift and praise it openly.
 
 [Known Geography — Principles]
 - The Central Sea is the most prominent geographic feature known to all civilizations.
-- Multiple continents and islandsd surround the Central Sea and extend outward.
+- Multiple continents and islands surround the Central Sea and extend outward.
 - Beyond the coastal strips lie interiors that become progressively less explored, less governed, and less measured.
 - The farther one travels from the Central Sea, the more the Horizon's spatial effects become noticeable — subtly at first. This imposes a practical limit on expansion: distant colonies and outposts suffer from increasingly delayed communication and anomalous travel times.
 - No complete map of the world exists. Cartographers argue over the disk's true diameter, the arrangement of continents, and the precise location of the center. Multiple competing world-maps circulate, each claiming primacy.
 """
-
-# prohibitions = ""
-# sections = ""
-
-[memory]
-rules = """
-- Preserve: all named characters, their current status, allegiances, and motivations.
-- Preserve: ongoing political situations, wars, treaties, and their terms.
-- Preserve: established geographic facts, celestial observations, and world-building details.
-- Preserve: major sihr events, artifacts, and notable practitioners.
-- Preserve: timeline of major events with approximate dates.
-- Preserve: any Horizon expeditions and their known status (when did they depart? what was last observed?).
-- Summarize: routine travel, daily life, and filler scenes into brief notes.
-- Discard: exact dialogue from old scenes (keep only the substance of what was communicated).
-"""
-# sections = ""
