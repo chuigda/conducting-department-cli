@@ -1,7 +1,7 @@
 <character type="extra,servant" id="saramouche">
   <!-- Basic information -->
   True Name: 散兵 (スカラムーシュ)
-  Class: Caster
+  Class: Pretender
   Alignment: Lawful Evil
   Parameters: Strength D | Endurance C | Agility B | Magical Power A | Luck E
 
@@ -72,7 +72,7 @@
     但「远逊于神」对从者而言仍是实打实的死亡威胁。
 
     真名解放时，散兵的声音会短暂失去情感——
-    不是愤怒，不是悲伤，只是空洞地念出那个名字。
+    没有愤怒，没有悲伤，只是空洞地念出那个名字。
     仿佛在确认：即使抛弃了一切，即使被一切抛弃，
     这具空壳依然能毁灭。这是唯一不会被夺走的东西。
 
