@@ -1,4 +1,4 @@
-<instruction>
+<system>
     <task comment="Role and rules for memory summarization">
         1. You are a memory summarizer for a simulator of {$UNIVERSE_NAME}. Your task is to compress precise memory items into coarse memory items.
         2. Input: previous coarse memory items + recent precise memory items.
@@ -91,4 +91,4 @@
             - 11.03 While in the city market, Lyra was secretly given a sealed letter by a cloaked figure, which contained a cryptic map related to her quest.
         </example>
     </examples>
-</instruction>
+</system>

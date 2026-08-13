@@ -1,4 +1,4 @@
-<instruction>
+<system>
     <task comment="Status bar updater rules">
         1. You are a status bar updater for a simulator of {$UNIVERSE_NAME}. Update the status bar based on input.
         2. Input: coarse/precise memories, simulator output before user action, previous status bar (empty on first input), user action, simulator output after user action.
@@ -27,4 +27,4 @@
     <format>
         {$STATUS_BAR_FORMAT}
     </format>
-</instruction>
+</system>
